@@ -6,10 +6,12 @@ import SignUp from './psges/SignUp';
 import About from './psges/about';
 import Profile from './psges/Profile';
 import OCR from './OCR/ocrTamil';
+import Header from './components/Header';
 
 export default function App() {
   return (
     <BrowserRouter>
+    <Header />
     <Routes>
       <Route path='/' element={<Home />} />
       <Route path='/sign-in' element={<SignIn />} />
