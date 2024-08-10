@@ -7,6 +7,7 @@ import About from './psges/about';
 import Profile from './psges/Profile';
 import OCR from './OCR/ocrTamil';
 import Header from './components/Header';
+import PrivateRoute from './components/PrivateRoute';
 
 export default function App() {
   return (
@@ -17,7 +18,9 @@ export default function App() {
       <Route path='/sign-in' element={<SignIn />} />
       <Route path='/sign-up' element={<SignUp />} />
       <Route path='/about' element={<About />} />
-      <Route path='/profile' element={<Profile />} />
+      <Route element={<PrivateRoute />} >
+        <Route path='/profile' element={<Profile />} />
+      </Route>
       <Route path='/ocr' element={<OCR />} />
     </Routes>
     </BrowserRouter>
