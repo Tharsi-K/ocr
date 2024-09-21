@@ -16,6 +16,7 @@ export default function Header() {
   //   navigate(`/search?${searchQuery}`);
   // };
 
+
   useEffect(() => {
     const urlParams = new URLSearchParams(location.search);
     const searchTermFromUrl = urlParams.get("searchTerm");
@@ -29,12 +30,11 @@ export default function Header() {
       <div className="flex justify-between items-center max-w-6xl mx-auto p-3">
         <Link to="/">
           <h1 className="font-bold text-sm sm:text-xl flex flex-wrap">
-            <span className="text-slate-500">Lak</span>
-            <span className="text-slate-700">ESTATE</span>
+            <span className="text-slate-500">Tamil</span>
+            <span className="text-slate-700">OCR</span>
           </h1>
         </Link>
         <form
-          // onSubmit={handleSubmit}
           className="bg-slate-100 p-3 rounded-lg flex items-center"
         >
           <input
@@ -59,6 +59,12 @@ export default function Header() {
               About
             </li>
           </Link>
+          {/* Show Admin Page if user is an Admin */}
+          {currentUser?.role === 'Admin' && (
+            <Link to="/admin">
+              <li className="text-slate-700 hover:underline">Admin Panel</li>
+            </Link>
+          )}
           <Link to="/profile">
             {currentUser ? (
               <img

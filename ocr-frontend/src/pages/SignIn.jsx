@@ -39,7 +39,7 @@ export default function SignIn() {
         dispatch(signInFailure(data.message));
         return;
       }
-      dispatch(signInSuccess(data));
+      dispatch(signInSuccess({ ...data, role: data.role }));
       navigate("/");
     } catch (error) {
       dispatch(signInFailure(error.message));
