@@ -7,6 +7,7 @@ import {
   uploadBytesResumable,
 } from 'firebase/storage';
 import { app } from '../firebase';
+import { Link } from 'react-router-dom';
 import {
   updateUserStart,
   updateUserSuccess,
@@ -27,6 +28,8 @@ export default function Profile() {
   const [fileUploadError, setFileUploadError] = useState(false);
   const [formData, setFormData] = useState({});
   const [updateSuccess, setUpdateSuccess] = useState(false);
+  const [showBooksError, setShowBooksError] = useState(false);
+  const [userBooks, setUserBooks] = useState([]);
   const dispatch = useDispatch();
 
   // firebase storage
@@ -126,6 +129,39 @@ export default function Profile() {
     }
   }
 
+  const handleShowBooks = async () => {
+    try {
+      setShowBooksError(false);
+      const res = await fetch(`/api/user/books/${currentUser._id}`);
+      const data = await res.json();
+      if (data.success === false) {
+        setShowBooksError(true);
+        return;
+      }
+      setUserBooks(data);
+    } catch (error) {
+      setShowBooksError(true);
+    }
+  };
+
+  const handleBookDelete = async (bookId) => {
+    try {
+      const res = await fetch(`/api/book/delete/${bookId}`, {
+        method: "DELETE",
+      });
+      const data = await res.json();
+      if (data.success === false) {
+        console.log(data.message);
+        return;
+      }
+      setUserBooks((prev) =>
+        prev.filter((book) => book._id !== bookId)
+      );
+    } catch (error) {
+      console.log(error.message);
+    }
+  };
+
   return (
     <div className='p-3 max-w-lg mx-auto'>
       <h1 className='text-3xl font-semibold text-center my-7'>Profile</h1>
@@ -185,6 +221,12 @@ export default function Profile() {
         >
           {loading ? 'Loading...' : 'Update'}
         </button>
+        <Link
+          className="bg-green-700 text-white p-3 rounded-lg uppercase text-center hover:opacity-95"
+          to={"/add-book"}
+        >
+          Add Book
+        </Link>
       </form>
       <div className='flex justify-between mt-5'>
         <span
@@ -200,6 +242,50 @@ export default function Profile() {
       <p className='text-green-700 mt-5'>
         {updateSuccess ? 'User is updated successfully!' : ''}
       </p>
+      <button onClick={handleShowBooks} className="text-green-700 w-full">
+        Show Books
+      </button>
+      <p className="text-red-700 mt-5">
+        {showBooksError ? "Error showing books" : ""}
+      </p>
+      {userBooks && userBooks.length > 0 && (
+        <div className="flex flex-col gap-4">
+          <h1 className="font-semibold text-2xl mt-7 text-center">
+            Your Books
+          </h1>
+          {userBooks.map((book) => (
+            <div
+              key={book._id}
+              className="border rounded-lg p-3 flex justify-between items-center gap-4"
+            >
+              <Link to={`/book/${book._id}`}>
+                <img
+                  src={book.imageUrls[0]}
+                  alt="book cover"
+                  className="h-16 w-16 object-contain"
+                />
+              </Link>
+              <Link
+                className="text-slate-700 font-semibold flex-1 hover:underline truncate"
+                to={`/book/${book._id}`}
+              >
+                <p>{book.name}</p>
+              </Link>
+              <div className="flex flex-col items-center">
+                <button
+                  onClick={() => handleBookDelete(book._id)}
+                  className="text-red-700 uppercase"
+                >
+                  Delete
+                </button>
+                <Link to={`/update-book/${book._id}`}>
+                  <button className="text-green-700 uppercase">Edit</button>
+                </Link>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
     </div>
   );
 }

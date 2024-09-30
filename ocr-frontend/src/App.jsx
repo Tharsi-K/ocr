@@ -9,6 +9,8 @@ import OCR from './OCR/ocrTamil';
 import Header from './components/Header';
 import PrivateRoute from './components/PrivateRoute';
 import AdminPanel from './pages/AdminPanel';
+import AddBook from './pages/AddBook';
+import UpdateBook from './pages/UpdateBook';
 
 export default function App() {
   return (
@@ -21,6 +23,8 @@ export default function App() {
     <Route path='/about' element={<About />} />
     <Route element={<PrivateRoute allowedRoles={['User', 'Admin']} />}>
       <Route path='/profile' element={<Profile />} />
+      <Route path='/add-book' element={<AddBook />} />
+      <Route path='/update-book/:bookId' element={<UpdateBook />} />
     </Route>
     {/* Admin-only route */}
     <Route element={<PrivateRoute allowedRoles={['Admin']} />}>
