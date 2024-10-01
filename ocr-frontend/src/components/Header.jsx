@@ -6,16 +6,15 @@ import { useEffect, useState } from "react";
 export default function Header() {
   const [searchTerm, setSearchTerm] = useState("");
   const { currentUser } = useSelector((state) => state.user);
-  // const navigate = useNavigate();
+  const navigate = useNavigate();
 
-  // const handleSubmit = (e) => {
-  //   e.preventDefault();
-  //   const urlParams = new URLSearchParams(window.location.search);
-  //   urlParams.set("searchTerm", searchTerm);
-  //   const searchQuery = urlParams.toString();
-  //   navigate(`/search?${searchQuery}`);
-  // };
-
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    const urlParams = new URLSearchParams(window.location.search);
+    urlParams.set("searchTerm", searchTerm);
+    const searchQuery = urlParams.toString();
+    navigate(`/search?${searchQuery}`);
+  };
 
   useEffect(() => {
     const urlParams = new URLSearchParams(location.search);
@@ -34,7 +33,7 @@ export default function Header() {
             <span className="text-slate-700">OCR</span>
           </h1>
         </Link>
-        <form
+        <form onSubmit={handleSubmit}
           className="bg-slate-100 p-3 rounded-lg flex items-center"
         >
           <input

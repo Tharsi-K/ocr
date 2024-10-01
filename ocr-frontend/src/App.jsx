@@ -11,6 +11,8 @@ import PrivateRoute from './components/PrivateRoute';
 import AdminPanel from './pages/AdminPanel';
 import AddBook from './pages/AddBook';
 import UpdateBook from './pages/UpdateBook';
+import Book from './pages/Book';
+import Search from './pages/Search';
 
 export default function App() {
   return (
@@ -25,6 +27,8 @@ export default function App() {
       <Route path='/profile' element={<Profile />} />
       <Route path='/add-book' element={<AddBook />} />
       <Route path='/update-book/:bookId' element={<UpdateBook />} />
+      <Route path='/book/:bookId' element={<Book />} />
+      <Route path='/search' element={<Search />} />
     </Route>
     {/* Admin-only route */}
     <Route element={<PrivateRoute allowedRoles={['Admin']} />}>
