@@ -8,6 +8,6 @@ router.post('/create', verifyToken, createBook);
 router.delete('/delete/:id', verifyToken, deleteBook);
 router.post('/update/:id', verifyToken, updateBook);
 router.get('/get/:id', getBook);
-router.get("/get", getAllBooks);
+router.get("/getAll", getAllBooks);
 
 export default router;
