@@ -25,7 +25,7 @@ const bookSchema = new mongoose.Schema(
       type: Array,
       required: true,
     },
-    userRef: {
+    userRef: { // Person created the book
       type: String,
       required: true,
     },

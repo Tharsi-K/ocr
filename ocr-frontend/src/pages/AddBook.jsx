@@ -53,6 +53,7 @@ export default function AddBook() {
     }
   };
 
+  //Extract image data to text
   const extractTextFromImage = (file) => {
     Tesseract.recognize(
       file,
