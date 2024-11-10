@@ -47,6 +47,7 @@ export default function ManageBooks() {
           <tr>
             <th className="px-6 py-3 border-b text-left">Book Name</th>
             <th className="px-6 py-3 border-b text-left">Author</th>
+            <th className="px-6 py-3 border-b text-left">Approval Status</th>
             <th className="px-6 py-3 border-b text-left">Actions</th>
           </tr>
         </thead>
@@ -54,11 +55,23 @@ export default function ManageBooks() {
           {books.map((book) => (
             <tr key={book._id}>
               <td className="px-6 py-4 border-b">
-                <Link to={`/book/${book._id}`} className="text-blue-500 hover:underline">
+                <Link
+                  to={`/book/${book._id}`}
+                  className="text-blue-500 hover:underline"
+                >
                   {book.name}
                 </Link>
               </td>
               <td className="px-6 py-4 border-b">{book.author}</td>
+              <td className="px-6 py-4 border-b">
+                {book.approvalStatus === "Approved" ? (
+                  <span className="text-green-500">Approved</span>
+                ) : book.approvalStatus === "Under Review" ? (
+                  <span className="text-yellow-500">Under Review</span>
+                ) : (
+                  <span className="text-red-500">Pending</span>
+                )}
+              </td>
               <td className="px-6 py-4 border-b">
                 <button
                   onClick={() => deleteBook(book._id)}
