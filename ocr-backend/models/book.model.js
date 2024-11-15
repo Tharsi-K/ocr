@@ -25,7 +25,7 @@ const bookSchema = new mongoose.Schema(
       type: Array,
       required: true,
     },
-    userRef: { // Person created the book
+    userRef: {
       type: String,
       required: true,
     },
@@ -39,19 +39,19 @@ const bookSchema = new mongoose.Schema(
     },
     condition: {
       type: String,
-      enum: ["New", "Fully old", "Half old","Illuminable"],
+      enum: ["New", "Fully old", "Half old", "Illuminable"],
     },
     documentType: {
       type: String,
-      enum: ["Documentation", "Book", "Magazine","News Paper", "Pamphlet", "flower", "Report", "Other"],
+      enum: ["Documentation", "Book", "Magazine", "News Paper", "Pamphlet", "flower", "Report", "Other"],
     },
     year: {
-      type: number,
+      type: Number,
       required: true,
     },
     textStyle: {
       type: String,
-      enum: ["Prose", "Rhyme", "Drama","Poetry", "Fiction"],
+      enum: ["Prose", "Rhyme", "Drama", "Poetry", "Fiction"],
     },
     fullness: {
       type: String,
@@ -65,7 +65,7 @@ const bookSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
-    internet reference: {
+    internetReference: { // Changed to camelCase
       type: String,
       required: true,
     },
@@ -73,7 +73,7 @@ const bookSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
-    source holder: {
+    sourceHolder: { // Changed to camelCase
       type: String,
       required: true,
     },
@@ -85,18 +85,18 @@ const bookSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
-    Date: {
+    date: { // Changed 'Date' to lowercase
       type: String,
       required: true,
     },
-    Key words: {
+    keyWords: { // Changed to camelCase
       type: String,
       required: true,
     },
     bookContent: [
       {
         chapterText: {
-          type: String, // Store as plain text or HTML/Markdown
+          type: String,
         }
       }
     ],
