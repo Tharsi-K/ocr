@@ -18,20 +18,35 @@ const bookSchema = new mongoose.Schema(
       required: true,
     },
     type: {
-      type: String,
-      enum: ["Jaffna", "Batticaloa", "Upcountry", "Vanni", "Muslim Tamil", "Other"],
+      type: [String],
+      enum: [
+        "Jaffna",
+        "Batticaloa",
+        "Upcountry",
+        "Vanni",
+        "Muslim Tamil",
+        "Other",
+      ],
     },
     imageUrls: {
       type: Array,
       required: true,
     },
-    userRef: { // Person created the book
+    userRef: {
+      // Person created the book
       type: String,
       required: true,
     },
     media: {
       type: String,
-      enum: ["print", "Trace", "Electronics"],
+      enum: [
+        "Typing",
+        "CharacterFile",
+        "ComputerTyping",
+        "Multimedia",
+        "Trace",
+        "Electronics",
+      ],
     },
     language: {
       type: String,
@@ -39,19 +54,28 @@ const bookSchema = new mongoose.Schema(
     },
     condition: {
       type: String,
-      enum: ["New", "Fully old", "Half old","Illuminable"],
+      enum: ["New", "Fully old", "Half old", "Illuminable"],
     },
     documentType: {
       type: String,
-      enum: ["Documentation", "Book", "Magazine","News Paper", "Pamphlet", "flower", "Report", "Other"],
+      enum: [
+        "Documentation",
+        "Book",
+        "Magazine",
+        "News Paper",
+        "Pamphlet",
+        "flower",
+        "Report",
+        "Other",
+      ],
     },
     year: {
-      type: number,
+      type: Number,
       required: true,
     },
     textStyle: {
       type: String,
-      enum: ["Prose", "Rhyme", "Drama","Poetry", "Fiction"],
+      enum: ["Prose", "Rhyme", "Drama", "Poetry", "Fiction"],
     },
     fullness: {
       type: String,
@@ -65,7 +89,7 @@ const bookSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
-    internet reference: {
+    internetReference: {
       type: String,
       required: true,
     },
@@ -73,7 +97,7 @@ const bookSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
-    source holder: {
+    sourceHolder: {
       type: String,
       required: true,
     },
@@ -89,16 +113,29 @@ const bookSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
-    Key words: {
+    KeyWords: {
       type: String,
       required: true,
+    },
+    reviewCount: { type: Number, default: 0 },
+    approvalStatus: {
+      type: String,
+      enum: ["Pending", "Under Review", "Approved"],
+      default: "Pending",
+    },
+    Pages: {
+      type: String,
+    },
+    Size: {
+      type: String,
+      enum: ["A4", "A5", "B5", "B6", "Other"],
     },
     bookContent: [
       {
         chapterText: {
           type: String, // Store as plain text or HTML/Markdown
-        }
-      }
+        },
+      },
     ],
   },
   { timestamps: true }

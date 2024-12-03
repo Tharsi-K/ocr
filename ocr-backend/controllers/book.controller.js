@@ -97,3 +97,28 @@ export const getAllBooks = async (req, res, next) => {
   }
 };
 
+export const approveBook = async (req, res, next) => {
+  const { id } = req.params;
+
+  try {
+    const book = await Book.findById(id);
+    if (!book) return res.status(404).json({ message: "Book not found" });
+
+    // Check if the book has exactly two reviews
+    if (book.reviewCount !== 2) {
+      return res.status(400).json({
+        message:
+          "Book cannot be approved until it has been reviewed by two users.",
+      });
+    }
+
+    // Approve the book by setting approvalStatus to "Approved"
+    book.approvalStatus = "Approved";
+
+    await book.save();
+    res.status(200).json({ message: "Book approved successfully", book });
+  } catch (error) {
+    console.error("Error approving book:", error);
+    res.status(500).json({ message: "Failed to approve book" });
+  }
+};

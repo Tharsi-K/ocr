@@ -1,15 +1,19 @@
 import { useState } from "react";
-import { getDownloadURL, getStorage, ref, uploadBytesResumable } from "firebase/storage";
+import {getDownloadURL, getStorage,ref, uploadBytesResumable,} from "firebase/storage";
 import { app } from "../firebase";
 import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
-import Tesseract from 'tesseract.js'; // Import Tesseract for OCR
-import DatePicker from "react-datepicker";
+import Tesseract from "tesseract.js"; // Import Tesseract for OCR
 
 export default function AddBook() {
   const { currentUser } = useSelector((state) => state.user);
   const navigate = useNavigate();
   const [selectedFile, setSelectedFile] = useState(null);
+  const [selectedSize, setSelectedSize] = useState('A4');
+  const [customSize, setCustomSize] = useState('');
+  const [selectedDocumentType, setSelectedDocumentType ] = useState('');
+  const [customDocumentType, setCustomDocumentType] = useState('');
+
   const [formData, setFormData] = useState({
     imageUrls: [],
     name: "",
@@ -19,14 +23,16 @@ export default function AddBook() {
     type: "",
     year: new Date(),
     publisher: "",
-    copyright:"",
-    internetconnection:"",
-    release:"",
-    keywords:"",
-    Date:"",
-    collector:"",
-    address:"",
-    sourceholder:"",
+    copyright: "",
+    internetReference: "",
+    release: "",
+    keyWords: "",
+    Date: "",
+    collector: "",
+    address: "",
+    pages: "",
+    size: "",
+    sourceHolder: "",
     bookContent: [
       {
         chapterText: "",
@@ -34,11 +40,33 @@ export default function AddBook() {
     ],
     media: "", // Added media state
   });
-  const [text, setText] = useState(''); // State for extracted text
+  const [text, setText] = useState(""); // State for extracted text
   const [imageUploadError, setImageUploadError] = useState(false);
   const [uploading, setUploading] = useState(false);
   const [error, setError] = useState(false);
   const [loading, setLoading] = useState(false);
+
+  const handleChanges = (e) => {
+    setSelectedSize(e.target.value);
+    if (e.target.value !== 'Other') {
+      setCustomSize(''); // Reset custom size if other option is not selected
+    }
+  };
+
+  const handleCustomSizeChange = (e) => {
+    setCustomSize(e.target.value);
+  };
+
+  const handleChangesType = (e) => {
+    setSelectedDocumentType(e.target.value);
+    if (e.target.value !== 'Other') {
+      setCustomDocumentType(''); 
+    }
+  };
+
+  const handleCustomTypeChange = (e) => {
+    setCustomDocumentType(e.target.value);
+  };
 
   const handleImageSubmit = (e) => {
     if (selectedFile && selectedFile.length === 1) {
@@ -56,11 +84,11 @@ export default function AddBook() {
           extractTextFromImage(selectedFile[0]); // Call to extract text
         })
         .catch((err) => {
-          setImageUploadError("Image upload failed (2 mb max per image)");
+          setImageUploadError("படப் பதிவேற்றம் தோல்வியடைந்தது (ஒரு படத்திற்கு அதிகபட்சம் 2mb மட்டுமே)");
           setUploading(false);
         });
     } else {
-      setImageUploadError("Please upload only one image");
+      setImageUploadError("ஒரு படத்தை மட்டும் பதிவேற்றவும்");
       setUploading(false);
     }
   };
@@ -69,16 +97,18 @@ export default function AddBook() {
   const extractTextFromImage = (file) => {
     Tesseract.recognize(
       file,
-      'tam',  // Use the Tamil language code
+      "tam", // Use the Tamil language code
       {
-        logger: (m) => console.log(m)
+        logger: (m) => console.log(m),
       }
-    ).then(({ data: { text } }) => {
-      setText(text); // Set the extracted text
-    }).catch((error) => {
-      console.error(error);
-      alert("An error occurred while processing the image.");
-    });
+    )
+      .then(({ data: { text } }) => {
+        setText(text); // Set the extracted text
+      })
+      .catch((error) => {
+        console.error(error);
+        alert("படத்தைச் செயலாக்கும்போது பிழை ஏற்பட்டதது");
+      });
   };
 
   const storeImage = async (file) => {
@@ -90,7 +120,8 @@ export default function AddBook() {
       uploadTask.on(
         "state_changed",
         (snapshot) => {
-          const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+          const progress =
+            (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
           console.log(`Upload is ${progress}% done`);
         },
         (error) => {
@@ -110,11 +141,15 @@ export default function AddBook() {
       ...formData,
       imageUrls: formData.imageUrls.filter((_, i) => i !== index),
     });
-    setText(''); // Clear extracted text when image is removed
+    setText(""); // Clear extracted text when image is removed
   };
 
   const handleChange = (e) => {
-    if (e.target.type === "number" || e.target.type === "text" || e.target.type === "textarea") {
+    if (
+      e.target.type === "number" ||
+      e.target.type === "text" ||
+      e.target.type === "textarea"
+    ) {
       setFormData({
         ...formData,
         [e.target.id]: e.target.value,
@@ -130,18 +165,19 @@ export default function AddBook() {
   const handleYearChange = (date) => {
     setFormData({
       ...formData,
-      year: date, // Set the selected date to formData.year
+      year: date.getFullYear(), // Set the selected date to formData.year
     });
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
+
     try {
-      if (formData.imageUrls.length < 1) return setError("You must upload at least one image");
+      if (formData.imageUrls.length < 1)
+        return setError("நீங்கள் குறைந்தது ஒரு படத்தையாவது பதிவேற்ற வேண்டும்");
       setLoading(true);
       setError(false);
-  
+
       // Update formData to only include chapterText (extracted text)
       const updatedFormData = {
         ...formData,
@@ -152,7 +188,7 @@ export default function AddBook() {
         ],
         userRef: currentUser._id,
       };
-  
+
       const res = await fetch("/api/book/create", {
         method: "POST",
         headers: {
@@ -160,16 +196,15 @@ export default function AddBook() {
         },
         body: JSON.stringify(updatedFormData), // Send the updated formData
       });
-      
+
       const data = await res.json();
       setLoading(false);
-      
+
       if (data.success === false) {
         setError(data.message);
       }
-      
+
       navigate(`/book/${data._id}`);
-      
     } catch (error) {
       setError(error.message);
       setLoading(false);
@@ -180,28 +215,29 @@ export default function AddBook() {
     const { id, checked } = e.target;
     setFormData((prevState) => {
       if (checked) {
-        // Add the checked item to the array
-        return { ...prevState, type: [...prevState.type, id] };
+        return { ...prevState, type: [...prevState.type, id] }; // Add the checked item to the array
       } else {
-        // Remove the unchecked item from the array
-        return { ...prevState, type: prevState.type.filter((type) => type !== id) };
+        return {
+          ...prevState,
+          type: prevState.type.filter((type) => type !== id), // Remove unchecked item
+        };
       }
     });
   };
 
   return (
     <main className="p-3 max-w-6xl mx-auto">
-      <h1 className="text-3xl font-semibold text-center my-7">Add a Book</h1>
+      <h1 className="text-3xl font-semibold text-center my-7">புதிய புத்தகத்தை பதிவேற்ற</h1>
       <form onSubmit={handleSubmit} className="flex gap-4">
         {/* Sidebar with input fields - aligned to the left */}
-        <div className="flex flex-col gap-4 w-full sm:w-1/4">
+        <div className="flex flex-col gap-4 w-full sm:w-2/5">
           <input
             type="text"
             placeholder="பெயர் "
             className="border p-2 rounded-lg"
             id="name"
             maxLength="62"
-            minLength="10"
+            minLength="5"
             required
             onChange={handleChange}
             value={formData.name}
@@ -212,7 +248,7 @@ export default function AddBook() {
             className="border p-2 rounded-lg"
             id="author"
             maxLength="62"
-            minLength="10"
+            minLength="5"
             required
             onChange={handleChange}
             value={formData.author}
@@ -242,48 +278,40 @@ export default function AddBook() {
                 <input
                   type="radio"
                   name="media"
-                  value="அச்சு"
+                  value="Typing" // Combined value
                   onChange={handleChange}
-                  id = "print"
+                  id="Typing"
                   required
-                /> அச்சு
-              </label>
-               {/* Conditionally render options for "அச்சு" */}
-          {formData.media === "அச்சு" && (
-            <div className="flex flex-col gap-2 mb-2 ml-5">
-              <label>
-                <input
-                  type="checkbox"
-                  name="mediaType"
-                  value="Typing"
-                  onChange={handleChange}
-                /> தட்டச்சு
+                />{" "}
+                தட்டச்சு
               </label>
               <label>
                 <input
-                  type="checkbox"
-                  name="mediaType"
-                  value="CharacterFile"
+                  type="radio"
+                  name="media"
+                  value="CharacterFile" // Combined value
                   onChange={handleChange}
-                /> எழுத்துக் கோர்ப்பு
+                />{" "}
+                எழுத்துக் கோர்ப்பு
               </label>
               <label>
                 <input
-                  type="checkbox"
-                  name="mediaType"
-                  value="ComputerTyping"
+                  type="radio"
+                  name="media"
+                  value="ComputerTyping" // Combined value
                   onChange={handleChange}
-                /> கணினித்தட்டச்சு
+                />{" "}
+                கணினித்தட்டச்சு
               </label>
-            </div>
-          )}
+
               <label>
                 <input
                   type="radio"
                   name="media"
                   value="Multimedia"
                   onChange={handleChange}
-                /> பல்லூடகம்
+                />{" "}
+                பல்லூடகம்
               </label>
               <label>
                 <input
@@ -291,7 +319,8 @@ export default function AddBook() {
                   name="media"
                   value="Trace"
                   onChange={handleChange}
-                /> சுவடி
+                />{" "}
+                சுவடி
               </label>
               <label>
                 <input
@@ -299,14 +328,19 @@ export default function AddBook() {
                   name="media"
                   value="Electronics"
                   onChange={handleChange}
-                /> இலத்திரனியல்
+                />{" "}
+                இலத்திரனியல்
               </label>
             </div>
           </div>
 
           <div>
             <label className="font-semibold">மொழி : </label>
-            <select id="language" className="border p-2 rounded-lg" onChange={handleChange}>
+            <select
+              id="language"
+              className="border p-2 rounded-lg"
+              onChange={handleChange}
+            >
               <option value="Tamil">தமிழ்</option>
               <option value="English">ஆங்கிலம்</option>
               <option value="Tamil-english">தமிழ்-ஆங்கிலம்</option>
@@ -314,7 +348,11 @@ export default function AddBook() {
           </div>
           <div>
             <label className="font-semibold">நிலை : </label>
-            <select id="condition" className="border p-2 rounded-lg" onChange={handleChange}>
+            <select
+              id="condition"
+              className="border p-2 rounded-lg"
+              onChange={handleChange}
+            >
               <option value="New">புதியது</option>
               <option value="Fully old">முழுமையாக பழுதடைந்தது</option>
               <option value="Half old">பகுதியாகப் பழுதடைந்தது</option>
@@ -322,10 +360,50 @@ export default function AddBook() {
             </select>
           </div>
           <div>
+            <label className="font-semibold">நீளம்/அளவு : </label>
+            <div className="px-4 flex items-center">
+              <label className="mr-1">பக்கங்கள்: </label>
+              <input
+                type="number"
+                className="border p-2 text-center ml-2 mt-2 w-20 rounded-lg"
+                id="Pages"
+                onChange={handleChange}
+                
+              />
+            </div>
+            <div className="px-4 flex items-center ">
+              <label className="mr-2 mt-3">ஆவண அளவு: </label>
+              <select
+                id="Size"
+                className="border rounded-lg mt-3 px-5 py-2"
+                value={selectedSize}
+                onChange={handleChanges}
+              >
+                <option value="A4">A4</option>
+                <option value="A5">A5</option>
+                <option value="B5">B5</option>
+                <option value="B6">B6</option>
+                <option value="Other">வேறு</option>
+              </select>
+              {selectedSize === 'Other' && (
+                <input
+                  type="text"
+                  className="border rounded-lg mt-3 p-2 ml-3"
+                  placeholder="ஆவண அளவு"
+                  value={customSize}
+                  onChange={handleCustomSizeChange}
+                />
+              )}
+            </div>
           </div>
           <div>
             <label className="font-semibold">ஆவண வகை : </label>
-            <select id="documentType" className="border p-2 rounded-lg" onChange={handleChange}>
+            <select
+              id="documentType"
+              className="border rounded-lg mt-3 px-5 py-2"
+              value={selectedDocumentType}
+              onChange={handleChangesType}
+            >
               <option value="Documentation">தொகுப்பு</option>
               <option value="Book">நூல்</option>
               <option value="Magazine">இதழ்</option>
@@ -335,7 +413,17 @@ export default function AddBook() {
               <option value="Report">அறிக்கை</option>
               <option value="Other">வேறு</option>
             </select>
+            {selectedDocumentType === 'Other' && (
+                <input
+                  type="text"
+                  className=" mt-3 p-1 ml-12"
+                  placeholder="வேறு ஆவண வகை"
+                  value={customDocumentType}
+                  onChange={handleCustomTypeChange}
+                />
+              )}
           </div>
+          <div>
           <input
             type="number"
             placeholder="ஆண்டு"
@@ -344,83 +432,86 @@ export default function AddBook() {
             onChange={handleChange}
             value={formData.year}
           />
-
+          </div>
           <div>
             <label className="font-semibold">எழுத்துவகை : </label>
-            <select id="textStyle" className="border p-2 rounded-lg" onChange={handleChange}>
+            <select
+              id="textStyle"
+              className="border p-2 rounded-lg"
+              onChange={handleChange}
+            >
               <option value="Prose">உரைநடை</option>
               <option value="Rhyme">செய்யுள்</option>
               <option value="Drama">நாடகம்</option>
               <option value="Poetry">கவிதை</option>
-              <option value="Fiction">புனைவு</option>              
+              <option value="Fiction">புனைவு</option>
             </select>
           </div>
-		  
-		  {/* Place checkboxes in a single line */}
-      <div className="">
-  <label className="font-semibold">கிளைமொழி/ வட்டார வழக்கு:</label>
-  <div className="flex gap-2">
-    <input
-      type="checkbox"
-      id="Jaffna"
-      className="w-5"
-      onChange={handleCheckboxChange}
-      checked={formData.type.includes("Jaffna")}
-    />
-    <span>யாழ்ப்பாணம்</span>
-  </div>
-  <div className="flex gap-2">
-    <input
-      type="checkbox"
-      id="Batticaloa"
-      className="w-5"
-      onChange={handleCheckboxChange}
-      checked={formData.type.includes("Batticaloa")}
-    />
-    <span>மட்டக்களப்பு</span>
-  </div>
-  <div className="flex gap-2">
-    <input
-      type="checkbox"
-      id="Upcountry"
-      className="w-5"
-      onChange={handleCheckboxChange}
-      checked={formData.type.includes("Upcountry")}
-    />
-    <span>மலையகம்</span>
-  </div>
-  <div className="flex gap-2">
-    <input
-      type="checkbox"
-      id="Vanni"
-      className="w-5"
-      onChange={handleCheckboxChange}
-      checked={formData.type.includes("Vanni")}
-    />
-    <span>வன்னி</span>
-  </div>
-  <div className="flex gap-2">
-    <input
-      type="checkbox"
-      id="Muslim Tamil"
-      className="w-5"
-      onChange={handleCheckboxChange}
-      checked={formData.type.includes("Muslim Tamil")}
-    />
-    <span>முஸ்லிம் தமிழ்</span>
-  </div>
-  <div className="flex gap-2">
-    <input
-      type="checkbox"
-      id="Other"
-      className="w-5"
-      onChange={handleCheckboxChange}
-      checked={formData.type.includes("Other")}
-    />
-    <span>வேறு</span>
-  </div>
-</div>
 
+          {/* Place checkboxes in a single line */}
+          <div className="">
+            <label className="font-semibold">கிளைமொழி/ வட்டார வழக்கு:</label>
+            <div className="flex gap-2">
+              <input
+                type="checkbox"
+                id="Jaffna"
+                className="w-5"
+                onChange={handleCheckboxChange}
+                checked={formData.type.includes("Jaffna")}
+              />
+              <span>யாழ்ப்பாணம்</span>
+            </div>
+            <div className="flex gap-2">
+              <input
+                type="checkbox"
+                id="Batticaloa"
+                className="w-5"
+                onChange={handleCheckboxChange}
+                checked={formData.type.includes("Batticaloa")}
+              />
+              <span>மட்டக்களப்பு</span>
+            </div>
+            <div className="flex gap-2">
+              <input
+                type="checkbox"
+                id="Upcountry"
+                className="w-5"
+                onChange={handleCheckboxChange}
+                checked={formData.type.includes("Upcountry")}
+              />
+              <span>மலையகம்</span>
+            </div>
+            <div className="flex gap-2">
+              <input
+                type="checkbox"
+                id="Vanni"
+                className="w-5"
+                onChange={handleCheckboxChange}
+                checked={formData.type.includes("Vanni")}
+              />
+              <span>வன்னி</span>
+            </div>
+            <div className="flex gap-2">
+              <input
+                type="checkbox"
+                id="Muslim Tamil"
+                className="w-5"
+                onChange={handleCheckboxChange}
+                checked={formData.type.includes("Muslim Tamil")}
+              />
+              <span>முஸ்லிம் தமிழ்</span>
+            </div>
+            <div className="flex gap-2">
+              <input
+                type="checkbox"
+                id="Other"
+                className="w-5"
+                onChange={handleCheckboxChange}
+                checked={formData.type.includes("Other")}
+              />
+              <span>வேறு</span>
+            </div>
+          </div>
 
           <div>
             <label className="font-semibold">முழுமை:</label>
@@ -431,22 +522,24 @@ export default function AddBook() {
                   name="fullness"
                   value="Full"
                   onChange={handleChange}
-                  id = "print"
+                  id="print"
                   required
-                /> முழுமை
+                />{" "}
+                முழுமை
               </label>
-               
+
               <label>
                 <input
                   type="radio"
                   name="fullness"
                   value="Half"
                   onChange={handleChange}
-                /> பகுதி
+                />{" "}
+                பகுதி
               </label>
             </div>
           </div>
-          
+
           <input
             type="text"
             placeholder="பதிப்பாளர்"
@@ -467,9 +560,9 @@ export default function AddBook() {
             type="text"
             placeholder="இணைய இணைப்பு"
             className="border p-2 rounded-lg"
-            id="internet reference"
+            id="internetReference"
             onChange={handleChange}
-            value={formData.internetconnection}
+            value={formData.internetReference}
           />
           <input
             type="text"
@@ -483,9 +576,9 @@ export default function AddBook() {
             type="text"
             placeholder="மூலத்தை வைத்திருப்பவர்"
             className="border p-2 rounded-lg"
-            id="source holder"
+            id="sourceHolder"
             onChange={handleChange}
-            value={formData.sourceholder}
+            value={formData.sourceHolder}
           />
           <input
             type="text"
@@ -515,18 +608,16 @@ export default function AddBook() {
             type="text"
             placeholder="திறவுச்சொற்கள்"
             className="border p-2 rounded-lg"
-            id="Key words"
+            id="KeyWords"
             onChange={handleChange}
-            value={formData.Keywords}
+            value={formData.KeyWords}
           />
 
-
-         
-
+          {/* Image upload section */}
           <div className="flex gap-4">
             <input
               onChange={(e) => setSelectedFile(e.target.files)}
-              className="p-2 border border-gray-300 rounded w-full"
+              className="p-2 border border-gray-300 rounded-lg w-full"
               type="file"
               id="image"
               accept="image/*"
@@ -537,7 +628,7 @@ export default function AddBook() {
               onClick={handleImageSubmit}
               className="p-2 text-green-700 border border-green-700 rounded uppercase hover:shadow-lg disabled:opacity-80"
             >
-              {uploading ? "Uploading..." : "Upload"}
+              {uploading ? "படம் பதிவேற்றப்படுகிறது..." : "பதிவேற்றவும்"}
             </button>
           </div>
           <p className="text-red-700 text-sm">
@@ -548,7 +639,7 @@ export default function AddBook() {
             disabled={loading || uploading}
             className="p-2 bg-slate-700 text-white rounded-lg uppercase hover:opacity-95 disabled:opacity-80"
           >
-            {loading ? "Creating..." : "Create book"}
+            {loading ? "தயவுசெய்து காத்திருங்கள்..." : "புத்தகத்தை சேர்க்கவும்"}
           </button>
           {error && <p className="text-red-700 text-sm">{error}</p>}
         </div>
@@ -568,21 +659,20 @@ export default function AddBook() {
                 onClick={() => handleRemoveImage(0)}
                 className="p-3 text-red-700 rounded-lg uppercase hover:opacity-75 mt-4"
               >
-                Delete
+                அகற்று
               </button>
             </div>
           )}
 
           {/* Text section */}
-      <div className="border p-3 w-1/2">
-        <h2 className="font-semibold">Extracted Text:</h2>
-        <p className="whitespace-pre-wrap">{text}</p>
-      </div>
-    </div>
-  </form>
-</main>
+          <div className="border bg-slate-50 p-5 rounded-lg h-4/5 w-full">
+            <h2 className="font-semibold text-slate-600">படத்தில் இருந்து OCR மூலம் பெறப்பட்ட உரை : </h2>
+            {/* <h2 className="font-semibold">படத்தில் இருந்து பிரித்தெடுக்கப்பட்ட உரை : </h2> */}
 
-
-
+            <p className="whitespace-pre-wrap">{text}</p>
+          </div>
+        </div>
+      </form>
+    </main>
   );
 }

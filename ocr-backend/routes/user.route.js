@@ -15,4 +15,3 @@ router.get('/getAll', verifyToken, verifyAdmin, getUsers); // Route to get all u
 //router.delete('/delete/:id', verifyToken, verifyAdmin, deleteUser);  // Only Admins can delete users
 
 export default router;
-
