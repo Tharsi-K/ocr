@@ -33,7 +33,6 @@ const bookSchema = new mongoose.Schema(
       required: true,
     },
     userRef: {
-      // Person created the book
       type: String,
       required: true,
     },
@@ -109,7 +108,7 @@ const bookSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
-    Date: {
+    date: { // Changed 'Date' to lowercase
       type: String,
       required: true,
     },

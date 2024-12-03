@@ -556,14 +556,17 @@ export default function AddBook() {
             onChange={handleChange}
             value={formData.copyright}
           />
-          <input
-            type="text"
-            placeholder="இணைய இணைப்பு"
-            className="border p-2 rounded-lg"
-            id="internetReference"
-            onChange={handleChange}
-            value={formData.internetReference}
-          />
+          
+  {/* <label htmlFor="webLink">இணைய இணைப்பு</label> */}
+  <input
+    type="text"
+    placeholder="இணைய இணைப்பு"
+    id="webLink"
+    value={formData.webLink}
+    onChange={(e) => setFormData({ ...formData, webLink: e.target.value })}
+    className="border p-2 rounded-lg"
+  />
+
           <input
             type="text"
             placeholder="வெளியீடு"
@@ -575,10 +578,10 @@ export default function AddBook() {
           <input
             type="text"
             placeholder="மூலத்தை வைத்திருப்பவர்"
-            className="border p-2 rounded-lg"
             id="sourceHolder"
-            onChange={handleChange}
             value={formData.sourceHolder}
+            onChange={(e) => setFormData({ ...formData, sourceHolder: e.target.value })}
+            className="border p-2 rounded-lg"
           />
           <input
             type="text"
