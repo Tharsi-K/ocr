@@ -4,5 +4,10 @@
 
 body{
     background-color: rgb(241, 245, 241);
-    font-family: 'Vijaya', 'Latha', sans-serif;
+    font-family: 'Noto Sans Tamil', sans-serif;
 }
+  
+  .tamil-text {
+    font-family: 'Noto Sans Tamil', sans-serif;
+  }
+  
