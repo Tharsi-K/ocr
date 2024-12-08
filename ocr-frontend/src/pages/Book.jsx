@@ -1,7 +1,8 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { useSelector } from "react-redux";
-import { FaBookmark, FaUserAlt, FaMapMarkerAlt } from "react-icons/fa";
+import { FaBookmark, FaUserAlt, FaMapMarkerAlt, FaClock } from "react-icons/fa";
+import { Link } from 'react-router-dom';
 
 export default function BookView() {
   const { currentUser } = useSelector((state) => state.user);
@@ -119,91 +120,203 @@ export default function BookView() {
         <p className="text-center my-7 text-2xl">Something went wrong!</p>
       )}
       {book && !loading && !error && (
-        <div className="max-w-5xl mx-auto p-6 my-7">
-          <div className="flex gap-10">
-            <div className="w-1/3">
-              <img
-                src={book.imageUrls[0]}
-                alt={book.name}
-                className="w-full h-full object-cover"
-              />
+        <div>
+          <Link
+            className="bg-green-700 text-white p-3 rounded-lg uppercase text-center hover:opacity-95 fixed right-5 bottom-5"
+            to={"/add-book"}
+          >
+            Add Book
+          </Link>
+
+          <div className="w-4/5 mx-auto p-6 my-7">
+
+
+
+            <div className="w-full bg-white mb-10 p-5">
+              <div className="w-full mb-5">
+                <p className="text-3xl font-semibold">{book.name}</p>
+                <p className="text-sm flex items-center gap-2 text-slate-600">
+                  <FaUserAlt className="text-green-700" /> எழுத்தாளர்: {book.author}
+                </p>
+                <p className="text-sm flex items-center gap-2 text-slate-600">
+                  <FaBookmark className="text-green-700" /> தொகுப்பு எண்: {book.ISBN}
+                </p>
+                <p className="flex items-center gap-2 text-slate-600 text-sm">
+                  <FaMapMarkerAlt className="text-green-700" /> கிளைமொழி/ வட்டார வழக்கு: {book.type}
+                </p>
+                <p className="text-sm flex items-center gap-2 text-slate-600">
+                  <FaClock className="text-green-700" />
+                  ஆண்டு: {book.year}
+                </p>
+
+              </div>
+
+              <div className="flex">
+                <div className="w-1/2">
+                  <p className="text-slate-800">
+                    <span className="font-semibold text-black">விளக்கம் : </span>
+                    {book.description}
+                  </p>
+                  <p className="text-slate-800">
+                    <span className="font-semibold text-black">ஊடகம் : </span>
+                    {book.media}
+                  </p>
+
+                  <p className="text-slate-800">
+                    <span className="font-semibold text-black">மொழி : </span>
+                    {book.language}
+                  </p>
+
+                  <p className="text-slate-800">
+                    <span className="font-semibold text-black">நிலை : </span>
+                    {book.condition}
+                  </p>
+
+                  <p className="text-slate-800">
+                    <span className="font-semibold text-black">ஆவண வகை : </span>
+                    {book.documentType}
+                  </p>
+
+
+                  <p className="text-slate-800">
+                    <span className="font-semibold text-black">எழுத்து வகை : </span>
+                    {book.textStyle}
+                  </p>
+
+                  
+                </div>
+                <div className="w-1/2">
+
+
+                  <p className="text-slate-800">
+                    <span className="font-semibold text-black">பதிப்பாளர் : </span>
+                    {book.publisher}
+                  </p>
+
+                  <p className="text-slate-800">
+                    <span className="font-semibold text-black">பதிப்புரிமை : </span>
+                    {book.copyright}
+                  </p>
+
+                  <p className="text-slate-800">
+                    <span className="font-semibold text-black">இணைய இணைப்பு : </span>
+                    {book.internetReference}
+                  </p>
+
+                  <p className="text-slate-800">
+                    <span className="font-semibold text-black">வெளியீடு : </span>
+                    {book.release}
+                  </p>
+
+                  <p className="text-slate-800">
+                    <span className="font-semibold text-black">மூலத்தை வைத்திருப்பவர் : </span>
+                    {book.sourceHolder}
+                  </p>
+
+                  <p className="text-slate-800">
+                    <span className="font-semibold text-black">முகவரி : </span>
+                    {book.address}
+                  </p>
+
+                  <p className="text-slate-800">
+                    <span className="font-semibold text-black">சேகரித்தவர் : </span>
+                    {book.collector}
+                  </p>
+
+                  <p className="text-slate-800">
+                    <span className="font-semibold text-black">திகதி : </span>
+                    {book.Date}
+                  </p>
+
+                  <p className="text-slate-800">
+                    <span className="font-semibold text-black">திறவுச்சொற்கள் : </span>
+                    {book.KeyWords}
+                  </p>
+                </div>
+              </div>
+
+
+
             </div>
 
-            <div className="w-2/3 flex flex-col gap-4">
-              <p className="text-3xl font-semibold">{book.name}</p>
-              <p className="text-sm flex items-center gap-2 text-slate-600">
-                <FaUserAlt className="text-green-700" /> Author: {book.author}
-              </p>
-              <p className="text-sm flex items-center gap-2 text-slate-600">
-                <FaBookmark className="text-green-700" /> ISBN: {book.ISBN}
-              </p>
-              <p className="flex items-center gap-2 text-slate-600 text-sm">
-                <FaMapMarkerAlt className="text-green-700" /> Type: {book.type}
-              </p>
-              <p className="text-slate-800">
-                <span className="font-semibold text-black">Description - </span>
-                {book.description}
-              </p>
 
-              <div className="bg-gray-100 p-4 rounded-md">
-                <h3 className="text-lg font-semibold mb-3">Extracted Text</h3>
-                <pre className="whitespace-pre-wrap">
-                  {book.bookContent[0]?.chapterText || "No text available"}
-                </pre>
+            <div className="flex gap-10">
+
+
+              <div className="w-1/3">
+                <img
+                  src={book.imageUrls[0]}
+                  alt={book.name}
+                  className="w-full h-full object-cover"
+                />
+              </div>
+
+              <div className="w-2/3 flex flex-col gap-4">
+
+
+                <div className="bg-gray-100 p-4 rounded-md">
+                  <h3 className="text-lg font-semibold mb-3">Extracted Text</h3>
+                  <pre className="whitespace-pre-wrap">
+                    {book.bookContent[0]?.chapterText || "No text available"}
+                  </pre>
+                </div>
               </div>
             </div>
-          </div>
 
-          {/* Reviews Section */}
-          <div className="mt-10">
-            <h3 className="text-2xl font-semibold mb-5">Reviews</h3>
-            <div className="space-y-4">
-              {reviews.length > 0 ? (
-                reviews.map((review) => (
-                  <div key={review._id} className="p-4 bg-gray-100 rounded-lg">
-                    <p className="font-semibold">{review.review}</p>
-                    <p className="text-sm text-gray-600">
-                      Reviewed by {review.userRef.username}
-                    </p>
-                  </div>
-                ))
-              ) : (
-                <p>No reviews yet.</p>
+            {/* Reviews Section */}
+            <div className="mt-10">
+              <h3 className="text-2xl font-semibold mb-5">Reviews</h3>
+              <div className="space-y-4">
+                {reviews.length > 0 ? (
+                  reviews.map((review) => (
+                    <div key={review._id} className="p-4 bg-gray-100 rounded-lg">
+                      <p className="font-semibold">{review.review}</p>
+                      <p className="text-sm text-gray-600">
+                        Reviewed by {review.userRef.username}
+                      </p>
+                    </div>
+                  ))
+                ) : (
+                  <p>No reviews yet.</p>
+                )}
+              </div>
+
+              {/* Review Form */}
+              {currentUser && (
+                <form onSubmit={handleReviewSubmit} className="mt-5">
+                  <textarea
+                    className="w-full p-3 border rounded-md"
+                    rows="4"
+                    value={reviewText}
+                    onChange={(e) => setReviewText(e.target.value)}
+                    placeholder="Write your review..."
+                    required
+                  ></textarea>
+                  <button
+                    type="submit"
+                    className="bg-slate-700 text-white mt-3 px-4 py-2 rounded-lg"
+                  >
+                    Submit Review
+                  </button>
+                </form>
+              )}
+
+              {/* Approve Button (Only visible to admins and when review count is 2) */}
+              {currentUser?.role === "Admin" && book.reviewCount === 2 && (
+                <button
+                  onClick={handleApproveClick}
+                  className="bg-green-600 text-white px-4 py-2 mt-5 rounded-md"
+                >
+                  Approve Book
+                </button>
               )}
             </div>
-
-            {/* Review Form */}
-            {currentUser && (
-              <form onSubmit={handleReviewSubmit} className="mt-5">
-                <textarea
-                  className="w-full p-3 border rounded-md"
-                  rows="4"
-                  value={reviewText}
-                  onChange={(e) => setReviewText(e.target.value)}
-                  placeholder="Write your review..."
-                  required
-                ></textarea>
-                <button
-                  type="submit"
-                  className="bg-slate-700 text-white mt-3 px-4 py-2 rounded-lg"
-                >
-                  Submit Review
-                </button>
-              </form>
-            )}
-
-            {/* Approve Button (Only visible to admins and when review count is 2) */}
-            {currentUser?.role === "Admin" && book.reviewCount === 2 && (
-              <button
-                onClick={handleApproveClick}
-                className="bg-green-600 text-white px-4 py-2 mt-5 rounded-md"
-              >
-                Approve Book
-              </button>
-            )}
           </div>
         </div>
+
       )}
     </main>
   );
 }
+
+

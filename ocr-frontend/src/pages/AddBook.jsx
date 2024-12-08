@@ -28,6 +28,10 @@ export default function AddBook() {
     release: "",
     keyWords: "",
     Date: "",
+    language: "",
+    condition: "",
+    documentType: "",
+    textStyle: "",
     collector: "",
     address: "",
     sourceHolder: "",
@@ -313,6 +317,7 @@ export default function AddBook() {
           <div>
             <label className="font-semibold">மொழி : </label>
             <select
+            type ="text"
               id="language"
               className="border p-2 rounded-lg"
               onChange={handleChange}
@@ -325,6 +330,7 @@ export default function AddBook() {
           <div>
             <label className="font-semibold">நிலை : </label>
             <select
+            type="text"
               id="condition"
               className="border p-2 rounded-lg"
               onChange={handleChange}
@@ -339,6 +345,7 @@ export default function AddBook() {
           <div>
             <label className="font-semibold">ஆவண வகை : </label>
             <select
+            type="text"
               id="documentType"
               className="border p-2 rounded-lg"
               onChange={handleChange}
@@ -365,6 +372,7 @@ export default function AddBook() {
           <div>
             <label className="font-semibold">எழுத்துவகை : </label>
             <select
+            type="text"
               id="textStyle"
               className="border p-2 rounded-lg"
               onChange={handleChange}
