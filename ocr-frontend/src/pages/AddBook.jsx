@@ -32,6 +32,12 @@ export default function AddBook() {
     address: "",
     pages: "",
     size: "",
+    language: "",
+    condition: "",
+    documentType: "",
+    textStyle: "",
+    collector: "",
+    address: "",
     sourceHolder: "",
     bookContent: [
       {

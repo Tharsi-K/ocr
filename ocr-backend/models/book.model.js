@@ -33,6 +33,7 @@ const bookSchema = new mongoose.Schema(
       required: true,
     },
     userRef: {
+      // Person created the book
       type: String,
       required: true,
     },
