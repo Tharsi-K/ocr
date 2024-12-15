@@ -75,15 +75,15 @@ export const getAllBooks = async (req, res, next) => {
     const sort = req.query.sort || "createdAt";
     const order = req.query.order || "desc";
 
-    // Handle filtering by book type (Jaffna, Eastern, Upcountry)
-    let type = req.query.type;
-    if (type === undefined || type === "all") {
-      type = { $in: ["Jaffna", "Eastern", "Upcountry"] }; // Default to all types if none specified
+    // Handle filtering by book region (Jaffna, Eastern, Upcountry)
+    let region = req.query.region;
+    if (region === undefined || region === "all") {
+      region = { $in: ["Jaffna", "Eastern", "Upcountry"] }; // Default to all regions if none specified
     }
 
     const books = await Book.find({
       name: { $regex: searchTerm, $options: "i" },
-      type, // Add type filter
+      region, // Add region filter
     })
       .sort({
         [sort]: order,

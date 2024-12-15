@@ -1,3 +1,4 @@
+import * as pdfjsLib from "pdfjs-dist";
 import { useState } from "react";
 import {
   getDownloadURL,
@@ -13,27 +14,30 @@ import Tesseract from "tesseract.js"; // Import Tesseract for OCR
 export default function AddBook() {
   const { currentUser } = useSelector((state) => state.user);
   const navigate = useNavigate();
-  const [selectedFile, setSelectedFile] = useState(null);
+  const [selectedImage, setSelectedImage] = useState(null);
+  const [selectedPdf, setSelectedPdf] = useState(null);
   const [formData, setFormData] = useState({
+    pdfUrl: "",
     imageUrls: [],
     name: "",
     description: "",
     ISBN: "",
     author: "",
-    type: "",
-    year: new Date(),
+    region: "",
+    year: "",
     publisher: "",
     copyright: "",
     internetReference: "",
     release: "",
     keyWords: "",
     Date: "",
-    language: "",
-    condition: "",
-    documentType: "",
-    textStyle: "",
+    language: "Tamil",
+    condition: "New",
+    documentType: "Documentation",
+    textStyle: "Prose",
     collector: "",
     address: "",
+    fullness: "",
     sourceHolder: "",
     bookContent: [
       {
@@ -42,18 +46,23 @@ export default function AddBook() {
     ],
     media: "", // Added media state
   });
+
+  console.log(formData);
   const [text, setText] = useState(""); // State for extracted text
   const [imageUploadError, setImageUploadError] = useState(false);
+  const [pdfUploadError, setPdfUploadError] = useState(false);
   const [uploading, setUploading] = useState(false);
+  const [uploadingPdf, setUploadingPdf] = useState(false);
   const [error, setError] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [pdfData, setPdfData] = useState(null); // Holds the PDF data for rendering
 
   const handleImageSubmit = (e) => {
-    if (selectedFile && selectedFile.length === 1) {
+    if (selectedImage && selectedImage.length === 1) {
       setUploading(true);
       setImageUploadError(false);
 
-      storeImage(selectedFile[0])
+      storeFile(selectedImage[0])
         .then((url) => {
           setFormData({
             ...formData,
@@ -61,7 +70,6 @@ export default function AddBook() {
           });
           setImageUploadError(false);
           setUploading(false);
-          extractTextFromImage(selectedFile[0]); // Call to extract text
         })
         .catch((err) => {
           setImageUploadError("Image upload failed (2 mb max per image)");
@@ -73,25 +81,86 @@ export default function AddBook() {
     }
   };
 
-  // Extract image data to text
-  const extractTextFromImage = (file) => {
-    Tesseract.recognize(
-      file,
-      "tam", // Use the Tamil language code
-      {
-        logger: (m) => console.log(m),
+  const handlePdfSubmit = (e) => {
+    if (setSelectedPdf && setSelectedPdf.length === 1) {
+      setUploadingPdf(true);
+      setPdfUploadError(false);
+
+      const file = selectedPdf[0];
+      const fileType = file.type;
+
+      // Check if the file is a PDF
+      if (fileType === "application/pdf") {
+        storeFile(file)
+          .then((url) => {
+            setFormData({
+              ...formData,
+              pdfUrl: url, // Save the PDF file URL
+            });
+            setUploadingPdf(false);
+            extractTextFromPDF(file); // Extract text from the PDF
+          })
+          .catch((err) => {
+            setPdfUploadError("PDF upload failed (2 MB max per file)");
+            setUploadingPdf(false);
+          });
+      } else {
+        setPdfUploadError("Unsupported file type. Please upload a PDF.");
+        setUploadingPdf(false);
       }
-    )
-      .then(({ data: { text } }) => {
-        setText(text); // Set the extracted text
-      })
-      .catch((error) => {
-        console.error(error);
-        alert("An error occurred while processing the image.");
-      });
+    } else {
+      setPdfUploadError("Please upload only one PDF file");
+      setUploadingPdf(false);
+    }
   };
 
-  const storeImage = async (file) => {
+  const extractTextFromPDF = async (file) => {
+    setUploadingPdf(true);
+    setText("");
+    try {
+      // Load the PDF
+      const pdf = await pdfjsLib.getDocument(URL.createObjectURL(file)).promise;
+
+      let fullText = "";
+
+      // Loop through each page
+      for (let pageNumber = 1; pageNumber <= pdf.numPages; pageNumber++) {
+        const page = await pdf.getPage(pageNumber);
+
+        // Render the page to a canvas
+        const viewport = page.getViewport({ scale: 1 });
+        const canvas = document.createElement("canvas");
+        const context = canvas.getContext("2d");
+        canvas.height = viewport.height;
+        canvas.width = viewport.width;
+
+        await page.render({ canvasContext: context, viewport }).promise;
+
+        // Convert canvas to an image and run OCR
+        const imageData = canvas.toDataURL("image/png");
+        const {
+          data: { text },
+        } = await Tesseract.recognize(
+          imageData,
+          "tam", // Use Tamil language code
+          {
+            logger: (m) => console.log(m),
+          }
+        );
+        fullText += text + "\n";
+      }
+
+      setText(fullText);
+      setPdfData(URL.createObjectURL(file)); // Set PDF URL for rendering
+    } catch (error) {
+      console.error(error);
+      alert("An error occurred while processing the PDF.");
+    } finally {
+      setUploadingPdf(false);
+    }
+  };
+
+  const storeFile = async (file) => {
     return new Promise((resolve, reject) => {
       const storage = getStorage(app);
       const fileName = new Date().getTime() + file.name;
@@ -109,19 +178,21 @@ export default function AddBook() {
         },
         () => {
           getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
-            resolve(downloadURL);
+            resolve(downloadURL); // Return the file URL
           });
         }
       );
     });
   };
 
-  const handleRemoveImage = (index) => {
+  const handleRemovePdf = (event) => {
     setFormData({
       ...formData,
-      imageUrls: formData.imageUrls.filter((_, i) => i !== index),
+      pdfUrl: "",
     });
+    setSelectedPdf(null);
     setText(""); // Clear extracted text when image is removed
+    setPdfData(null);
   };
 
   const handleChange = (e) => {
@@ -139,22 +210,27 @@ export default function AddBook() {
         ...formData,
         media: e.target.value, // Update media selection
       });
+    } else if (e.target.name === "fullness") {
+      setFormData({
+        ...formData,
+        fullness: e.target.value, // Update media selection
+      });
+    } else if (e.target.tagName === "SELECT") {
+      setFormData({
+        ...formData,
+        [e.target.id]: e.target.value,
+      });
     }
-  };
-
-  const handleYearChange = (date) => {
-    setFormData({
-      ...formData,
-      year: date, // Set the selected date to formData.year
-    });
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
     try {
-      if (formData.imageUrls.length < 1)
-        return setError("You must upload at least one image");
+      if (formData.imageUrls.length < 1 || !formData.pdfUrl)
+        return setError(
+          "You must upload at least one image or You must upload a PDF file"
+        );
       setLoading(true);
       setError(false);
 
@@ -195,11 +271,11 @@ export default function AddBook() {
     const { id, checked } = e.target;
     setFormData((prevState) => {
       if (checked) {
-        return { ...prevState, type: [...prevState.type, id] }; // Add the checked item to the array
+        return { ...prevState, region: [...prevState.region, id] }; // Add the checked item to the region array
       } else {
         return {
           ...prevState,
-          type: prevState.type.filter((type) => type !== id), // Remove unchecked item
+          region: prevState.region.filter((region) => region !== id), // Remove unchecked item from region
         };
       }
     });
@@ -208,9 +284,12 @@ export default function AddBook() {
   return (
     <main className="p-3 max-w-6xl mx-auto">
       <h1 className="text-3xl font-semibold text-center my-7">Add a Book</h1>
-      <form onSubmit={handleSubmit} className="flex gap-4">
-        {/* Sidebar with input fields - aligned to the left */}
-        <div className="flex flex-col gap-4 w-full sm:w-1/4">
+      <form
+        onSubmit={handleSubmit}
+        className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6"
+      >
+        {/* Column 1 */}
+        <div className="flex flex-col gap-4">
           <input
             type="text"
             placeholder="பெயர் "
@@ -222,6 +301,139 @@ export default function AddBook() {
             onChange={handleChange}
             value={formData.name}
           />
+
+          <textarea
+            type="text"
+            placeholder="விளக்கம்"
+            className="border p-2 rounded-lg"
+            id="description"
+            required
+            onChange={handleChange}
+            value={formData.description}
+          />
+
+          <div>
+            <label className="font-semibold">நிலை : </label>
+            <select
+              type="text"
+              id="condition"
+              className="border p-2 rounded-lg"
+              onChange={handleChange}
+            >
+              <option value="New" selected>
+                புதியது
+              </option>
+              <option value="Fully old">முழுமையாக பழுதடைந்தது</option>
+              <option value="Half old">பகுதியாகப் பழுதடைந்தது</option>
+              <option value="Illuminable">ஒளிவருட முடியாதது</option>
+            </select>
+          </div>
+
+          <div>
+            <label className="font-semibold">ஆவண வகை : </label>
+            <select
+              type="text"
+              id="documentType"
+              className="border p-2 rounded-lg"
+              onChange={handleChange}
+            >
+              <option value="Documentation" selected>
+                தொகுப்பு
+              </option>
+              <option value="Book">நூல்</option>
+              <option value="Magazine">இதழ்</option>
+              <option value="News Paper">பத்திரிகை</option>
+              <option value="Pamphlet">துண்டு பிரசுரம்</option>
+              <option value="flower">மலர்</option>
+              <option value="Report">அறிக்கை</option>
+              <option value="Other">வேறு</option>
+            </select>
+          </div>
+
+          <div>
+            <label className="font-semibold">கிளைமொழி/ வட்டார வழக்கு:</label>
+            <div className="flex gap-2">
+              <input
+                type="checkbox"
+                id="Jaffna"
+                className="w-5"
+                onChange={handleCheckboxChange}
+                checked={formData.region.includes("Jaffna")}
+              />
+              <span>யாழ்ப்பாணம்</span>
+            </div>
+            <div className="flex gap-2">
+              <input
+                type="checkbox"
+                id="Batticaloa"
+                className="w-5"
+                onChange={handleCheckboxChange}
+                checked={formData.region.includes("Batticaloa")}
+              />
+              <span>மட்டக்களப்பு</span>
+            </div>
+            <div className="flex gap-2">
+              <input
+                type="checkbox"
+                id="Upcountry"
+                className="w-5"
+                onChange={handleCheckboxChange}
+                checked={formData.region.includes("Upcountry")}
+              />
+              <span>மலையகம்</span>
+            </div>
+            <div className="flex gap-2">
+              <input
+                type="checkbox"
+                id="Vanni"
+                className="w-5"
+                onChange={handleCheckboxChange}
+                checked={formData.region.includes("Vanni")}
+              />
+              <span>வன்னி</span>
+            </div>
+            <div className="flex gap-2">
+              <input
+                type="checkbox"
+                id="Muslim Tamil"
+                className="w-5"
+                onChange={handleCheckboxChange}
+                checked={formData.region.includes("Muslim Tamil")}
+              />
+              <span>முஸ்லிம் தமிழ்</span>
+            </div>
+            <div className="flex gap-2">
+              <input
+                type="checkbox"
+                id="Other"
+                className="w-5"
+                onChange={handleCheckboxChange}
+                checked={formData.region.includes("Other")}
+              />
+              <span>வேறு</span>
+            </div>
+          </div>
+
+          <input
+            type="text"
+            placeholder="சேகரித்தவர்"
+            className="border p-2 rounded-lg"
+            id="collector"
+            onChange={handleChange}
+            value={formData.collector}
+          />
+          <input
+            type="text"
+            placeholder="திகதி"
+            className="border p-2 rounded-lg"
+            id="Date"
+            onChange={handleChange}
+            value={formData.Date}
+          />
+        </div>
+
+        {/* Column 2 */}
+        <div className="flex flex-col gap-4">
           <input
             type="text"
             placeholder="எழுத்தாளர் "
@@ -233,24 +445,7 @@ export default function AddBook() {
             onChange={handleChange}
             value={formData.author}
           />
-          <input
-            type="text"
-            placeholder="தொகுப்பு எண் "
-            className="border p-2 rounded-lg"
-            id="ISBN"
-            required
-            onChange={handleChange}
-            value={formData.ISBN}
-          />
-          <textarea
-            type="text"
-            placeholder="விளக்கம்"
-            className="border p-2 rounded-lg"
-            id="description"
-            required
-            onChange={handleChange}
-            value={formData.description}
-          />
+
           <div>
             <label className="font-semibold">ஊடகம்:</label>
             <div className="flex flex-col gap-2">
@@ -315,142 +510,6 @@ export default function AddBook() {
           </div>
 
           <div>
-            <label className="font-semibold">மொழி : </label>
-            <select
-            type ="text"
-              id="language"
-              className="border p-2 rounded-lg"
-              onChange={handleChange}
-            >
-              <option value="Tamil">தமிழ்</option>
-              <option value="English">ஆங்கிலம்</option>
-              <option value="Tamil-english">தமிழ்-ஆங்கிலம்</option>
-            </select>
-          </div>
-          <div>
-            <label className="font-semibold">நிலை : </label>
-            <select
-            type="text"
-              id="condition"
-              className="border p-2 rounded-lg"
-              onChange={handleChange}
-            >
-              <option value="New">புதியது</option>
-              <option value="Fully old">முழுமையாக பழுதடைந்தது</option>
-              <option value="Half old">பகுதியாகப் பழுதடைந்தது</option>
-              <option value="Illuminable">ஒளிவருட முடியாதது</option>
-            </select>
-          </div>
-          <div></div>
-          <div>
-            <label className="font-semibold">ஆவண வகை : </label>
-            <select
-            type="text"
-              id="documentType"
-              className="border p-2 rounded-lg"
-              onChange={handleChange}
-            >
-              <option value="Documentation">தொகுப்பு</option>
-              <option value="Book">நூல்</option>
-              <option value="Magazine">இதழ்</option>
-              <option value="News Paper">பத்திரிகை</option>
-              <option value="Pamphlet">துண்டு பிரசுரம்</option>
-              <option value="flower">மலர்</option>
-              <option value="Report">அறிக்கை</option>
-              <option value="Other">வேறு</option>
-            </select>
-          </div>
-          <input
-            type="number"
-            placeholder="ஆண்டு"
-            className="border p-2 rounded-lg"
-            id="year"
-            onChange={handleChange}
-            value={formData.year}
-          />
-
-          <div>
-            <label className="font-semibold">எழுத்துவகை : </label>
-            <select
-            type="text"
-              id="textStyle"
-              className="border p-2 rounded-lg"
-              onChange={handleChange}
-            >
-              <option value="Prose">உரைநடை</option>
-              <option value="Rhyme">செய்யுள்</option>
-              <option value="Drama">நாடகம்</option>
-              <option value="Poetry">கவிதை</option>
-              <option value="Fiction">புனைவு</option>
-            </select>
-          </div>
-
-          {/* Place checkboxes in a single line */}
-          <div className="">
-            <label className="font-semibold">கிளைமொழி/ வட்டார வழக்கு:</label>
-            <div className="flex gap-2">
-              <input
-                type="checkbox"
-                id="Jaffna"
-                className="w-5"
-                onChange={handleCheckboxChange}
-                checked={formData.type.includes("Jaffna")}
-              />
-              <span>யாழ்ப்பாணம்</span>
-            </div>
-            <div className="flex gap-2">
-              <input
-                type="checkbox"
-                id="Batticaloa"
-                className="w-5"
-                onChange={handleCheckboxChange}
-                checked={formData.type.includes("Batticaloa")}
-              />
-              <span>மட்டக்களப்பு</span>
-            </div>
-            <div className="flex gap-2">
-              <input
-                type="checkbox"
-                id="Upcountry"
-                className="w-5"
-                onChange={handleCheckboxChange}
-                checked={formData.type.includes("Upcountry")}
-              />
-              <span>மலையகம்</span>
-            </div>
-            <div className="flex gap-2">
-              <input
-                type="checkbox"
-                id="Vanni"
-                className="w-5"
-                onChange={handleCheckboxChange}
-                checked={formData.type.includes("Vanni")}
-              />
-              <span>வன்னி</span>
-            </div>
-            <div className="flex gap-2">
-              <input
-                type="checkbox"
-                id="Muslim Tamil"
-                className="w-5"
-                onChange={handleCheckboxChange}
-                checked={formData.type.includes("Muslim Tamil")}
-              />
-              <span>முஸ்லிம் தமிழ்</span>
-            </div>
-            <div className="flex gap-2">
-              <input
-                type="checkbox"
-                id="Other"
-                className="w-5"
-                onChange={handleCheckboxChange}
-                checked={formData.type.includes("Other")}
-              />
-              <span>வேறு</span>
-            </div>
-          </div>
-
-          <div>
             <label className="font-semibold">முழுமை:</label>
             <div className="flex flex-col gap-2">
               <label>
@@ -479,6 +538,80 @@ export default function AddBook() {
 
           <input
             type="text"
+            placeholder="முகவரி"
+            className="border p-2 rounded-lg"
+            id="address"
+            onChange={handleChange}
+            value={formData.address}
+          />
+
+          <input
+            type="text"
+            placeholder="திறவுச்சொற்கள்"
+            className="border p-2 rounded-lg"
+            id="keyWords"
+            onChange={handleChange}
+            value={formData.keyWords}
+          />
+        </div>
+
+        {/* Column 3 */}
+        <div className="flex flex-col gap-4">
+          <input
+            type="text"
+            placeholder="தொகுப்பு எண் "
+            className="border p-2 rounded-lg"
+            id="ISBN"
+            required
+            onChange={handleChange}
+            value={formData.ISBN}
+          />
+
+          <div>
+            <label className="font-semibold">மொழி : </label>
+            <select
+              type="text"
+              id="language"
+              className="border p-2 rounded-lg"
+              onChange={handleChange}
+            >
+              <option value="Tamil" selected>
+                தமிழ்
+              </option>
+              <option value="English">ஆங்கிலம்</option>
+              <option value="Tamil-english">தமிழ்-ஆங்கிலம்</option>
+            </select>
+          </div>
+
+          <input
+            type="number"
+            placeholder="ஆண்டு"
+            className="border p-2 rounded-lg"
+            id="year"
+            onChange={handleChange}
+            value={formData.year}
+          />
+
+          <div>
+            <label className="font-semibold">எழுத்துவகை : </label>
+            <select
+              type="text"
+              id="textStyle"
+              className="border p-2 rounded-lg"
+              onChange={handleChange}
+            >
+              <option value="Prose" selected>
+                உரைநடை
+              </option>
+              <option value="Rhyme">செய்யுள்</option>
+              <option value="Drama">நாடகம்</option>
+              <option value="Poetry">கவிதை</option>
+              <option value="Fiction">புனைவு</option>
+            </select>
+          </div>
+
+          <input
+            type="text"
             placeholder="பதிப்பாளர்"
             className="border p-2 rounded-lg"
             id="publisher"
@@ -501,6 +634,7 @@ export default function AddBook() {
             onChange={handleChange}
             value={formData.internetReference}
           />
+
           <input
             type="text"
             placeholder="வெளியீடு"
@@ -517,42 +651,13 @@ export default function AddBook() {
             onChange={handleChange}
             value={formData.sourceHolder}
           />
-          <input
-            type="text"
-            placeholder="முகவரி"
-            className="border p-2 rounded-lg"
-            id="address"
-            onChange={handleChange}
-            value={formData.address}
-          />
-          <input
-            type="text"
-            placeholder="சேகரித்தவர்"
-            className="border p-2 rounded-lg"
-            id="collector"
-            onChange={handleChange}
-            value={formData.collector}
-          />
-          <input
-            type="text"
-            placeholder="திகதி"
-            className="border p-2 rounded-lg"
-            id="Date"
-            onChange={handleChange}
-            value={formData.Date}
-          />
-          <input
-            type="text"
-            placeholder="திறவுச்சொற்கள்"
-            className="border p-2 rounded-lg"
-            id="KeyWords"
-            onChange={handleChange}
-            value={formData.KeyWords}
-          />
+        </div>
 
+        {/* Button Section */}
+        <div className="col-span-3 flex gap-4 justify-end mt-4">
           <div className="flex gap-4">
             <input
-              onChange={(e) => setSelectedFile(e.target.files)}
+              onChange={(e) => setSelectedImage(e.target.files)}
               className="p-2 border border-gray-300 rounded w-full"
               type="file"
               id="image"
@@ -564,49 +669,80 @@ export default function AddBook() {
               onClick={handleImageSubmit}
               className="p-2 text-green-700 border border-green-700 rounded uppercase hover:shadow-lg disabled:opacity-80"
             >
-              {uploading ? "Uploading..." : "Upload"}
+              {uploading ? "Uploading..." : "Upload Book Cover"}
+            </button>
+          </div>
+
+          <div className="flex gap-4">
+            <input
+              type="file"
+              accept="application/pdf"
+              onChange={(e) => setSelectedPdf(e.target.files)}
+              className="p-2 border border-gray-300 rounded w-full"
+            />
+            <button
+              type="button"
+              disabled={uploadingPdf}
+              onClick={handlePdfSubmit}
+              className="p-2 text-green-700 border border-green-700 rounded uppercase hover:shadow-lg disabled:opacity-80"
+            >
+              {uploadingPdf ? "Uploading..." : "Upload Book Pdf"}
             </button>
           </div>
           <p className="text-red-700 text-sm">
-            {imageUploadError && imageUploadError}
+            {imageUploadError && `Image Upload Error: ${imageUploadError}`}
           </p>
-
+          <p className="text-red-700 text-sm">
+            {pdfUploadError && `PDF Upload Error: ${pdfUploadError}`}
+          </p>
+        </div>
+        <div className="col-span-3 flex gap-4 justify-end mt-1">
           <button
-            disabled={loading || uploading}
+            disabled={loading || uploading || uploadingPdf}
             className="p-2 bg-slate-700 text-white rounded-lg uppercase hover:opacity-95 disabled:opacity-80"
           >
             {loading ? "Creating..." : "Create book"}
           </button>
           {error && <p className="text-red-700 text-sm">{error}</p>}
         </div>
-
-        {/* Image and text side by side */}
-        <div className="flex flex-1 gap-4">
-          {/* Image section */}
-          {formData.imageUrls.length > 0 && (
-            <div className="p-3 border items-center w-1/2">
-              <img
-                src={formData.imageUrls[0]}
-                alt="listing image"
-                className="w-full h-auto object-contain rounded-lg"
-              />
-              <button
-                type="button"
-                onClick={() => handleRemoveImage(0)}
-                className="p-3 text-red-700 rounded-lg uppercase hover:opacity-75 mt-4"
-              >
-                Delete
-              </button>
-            </div>
-          )}
-
-          {/* Text section */}
-          <div className="border p-3 w-1/2">
-            <h2 className="font-semibold">Extracted Text:</h2>
-            <p className="whitespace-pre-wrap">{text}</p>
-          </div>
-        </div>
       </form>
+
+      {/* Image and text side by side */}
+      <div className="flex mt-4 space-x-4 w-full">
+        {/* PDF Viewer on the Left */}
+        <div className="flex-1 w-full">
+          <h2 className="text-xl font-medium mb-2">PDF Preview</h2>
+          {pdfData && (
+            <iframe
+              src={pdfData}
+              width="100%"
+              height="500px"
+              title="PDF Preview"
+              frameBorder="0"
+            />
+          )}
+          <button
+            type="button"
+            onClick={handleRemovePdf}
+            className="p-3 text-red-700 rounded-lg uppercase hover:opacity-75 mt-4"
+          >
+            Delete
+          </button>
+        </div>
+
+        {/* Extracted Text on the Right */}
+        <div className="flex-1 w-full">
+          <h2 className="text-xl font-medium mb-2">Extracted Text</h2>
+          <textarea
+            value={text}
+            onChange={(e) => setText(e.target.value)} // Handle text changes
+            rows="20"
+            cols="50"
+            placeholder="Extracted text will appear here..."
+            className="border border-gray-300 p-2 rounded-md w-full"
+          />
+        </div>
+      </div>
     </main>
   );
 }
