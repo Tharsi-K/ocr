@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { FaBookmark, FaUserAlt, FaMapMarkerAlt, FaClock } from "react-icons/fa";
-import { Link } from 'react-router-dom';
+import { Link } from "react-router-dom";
 
 export default function BookView() {
   const { currentUser } = useSelector((state) => state.user);
@@ -121,40 +121,44 @@ export default function BookView() {
       )}
       {book && !loading && !error && (
         <div>
-          <Link
-            className="bg-green-700 text-white p-3 rounded-lg uppercase text-center hover:opacity-95 fixed right-5 bottom-5"
-            to={"/add-book"}
-          >
-            Add Book
-          </Link>
-
           <div className="w-4/5 mx-auto p-6 my-7">
+            <div className="w-full bg-white mb-10 p-5 flex items-start">
+              {/* Book Cover */}
+              <div className="w-20 h-28 mr-5">
+                <img
+                  src={book.imageUrls[0]}
+                  alt={book.name}
+                  className="w-full h-full object-cover rounded-md shadow"
+                />
+              </div>
 
-
-
-            <div className="w-full bg-white mb-10 p-5">
-              <div className="w-full mb-5">
+              {/* Book Details */}
+              <div className="flex-1">
                 <p className="text-3xl font-semibold">{book.name}</p>
                 <p className="text-sm flex items-center gap-2 text-slate-600">
-                  <FaUserAlt className="text-green-700" /> எழுத்தாளர்: {book.author}
+                  <FaUserAlt className="text-green-700" /> எழுத்தாளர்:{" "}
+                  {book.author}
                 </p>
                 <p className="text-sm flex items-center gap-2 text-slate-600">
-                  <FaBookmark className="text-green-700" /> தொகுப்பு எண்: {book.ISBN}
+                  <FaBookmark className="text-green-700" /> தொகுப்பு எண்:{" "}
+                  {book.ISBN}
                 </p>
                 <p className="flex items-center gap-2 text-slate-600 text-sm">
-                  <FaMapMarkerAlt className="text-green-700" /> கிளைமொழி/ வட்டார வழக்கு: {book.type}
+                  <FaMapMarkerAlt className="text-green-700" /> கிளைமொழி/ வட்டார
+                  வழக்கு: {book.region}
                 </p>
                 <p className="text-sm flex items-center gap-2 text-slate-600">
                   <FaClock className="text-green-700" />
                   ஆண்டு: {book.year}
                 </p>
-
               </div>
 
               <div className="flex">
                 <div className="w-1/2">
                   <p className="text-slate-800">
-                    <span className="font-semibold text-black">விளக்கம் : </span>
+                    <span className="font-semibold text-black">
+                      விளக்கம் :{" "}
+                    </span>
                     {book.description}
                   </p>
                   <p className="text-slate-800">
@@ -177,39 +181,46 @@ export default function BookView() {
                     {book.documentType}
                   </p>
 
-
                   <p className="text-slate-800">
-                    <span className="font-semibold text-black">எழுத்து வகை : </span>
+                    <span className="font-semibold text-black">
+                      எழுத்து வகை :{" "}
+                    </span>
                     {book.textStyle}
                   </p>
-
-                  
                 </div>
                 <div className="w-1/2">
-
-
                   <p className="text-slate-800">
-                    <span className="font-semibold text-black">பதிப்பாளர் : </span>
+                    <span className="font-semibold text-black">
+                      பதிப்பாளர் :{" "}
+                    </span>
                     {book.publisher}
                   </p>
 
                   <p className="text-slate-800">
-                    <span className="font-semibold text-black">பதிப்புரிமை : </span>
+                    <span className="font-semibold text-black">
+                      பதிப்புரிமை :{" "}
+                    </span>
                     {book.copyright}
                   </p>
 
                   <p className="text-slate-800">
-                    <span className="font-semibold text-black">இணைய இணைப்பு : </span>
+                    <span className="font-semibold text-black">
+                      இணைய இணைப்பு :{" "}
+                    </span>
                     {book.internetReference}
                   </p>
 
                   <p className="text-slate-800">
-                    <span className="font-semibold text-black">வெளியீடு : </span>
+                    <span className="font-semibold text-black">
+                      வெளியீடு :{" "}
+                    </span>
                     {book.release}
                   </p>
 
                   <p className="text-slate-800">
-                    <span className="font-semibold text-black">மூலத்தை வைத்திருப்பவர் : </span>
+                    <span className="font-semibold text-black">
+                      மூலத்தை வைத்திருப்பவர் :{" "}
+                    </span>
                     {book.sourceHolder}
                   </p>
 
@@ -219,7 +230,9 @@ export default function BookView() {
                   </p>
 
                   <p className="text-slate-800">
-                    <span className="font-semibold text-black">சேகரித்தவர் : </span>
+                    <span className="font-semibold text-black">
+                      சேகரித்தவர் :{" "}
+                    </span>
                     {book.collector}
                   </p>
 
@@ -229,37 +242,43 @@ export default function BookView() {
                   </p>
 
                   <p className="text-slate-800">
-                    <span className="font-semibold text-black">திறவுச்சொற்கள் : </span>
+                    <span className="font-semibold text-black">
+                      திறவுச்சொற்கள் :{" "}
+                    </span>
                     {book.KeyWords}
                   </p>
                 </div>
               </div>
-
-
-
             </div>
 
-
-            <div className="flex gap-10">
-
-
-              <div className="w-1/3">
-                <img
-                  src={book.imageUrls[0]}
-                  alt={book.name}
-                  className="w-full h-full object-cover"
-                />
+            {/* Image and text side by side */}
+            <div className="flex mt-4 space-x-4 w-full">
+              {/* PDF Viewer on the Left */}
+              <div className="flex-1 w-full">
+                <h2 className="text-xl font-medium mb-2">PDF Preview</h2>
+                {book.pdfUrl && (
+                  <embed
+                    src={book.pdfUrl}
+                    width="100%"
+                    height="500px"
+                    type="application/pdf"
+                  />
+                )}
               </div>
 
-              <div className="w-2/3 flex flex-col gap-4">
-
-
-                <div className="bg-gray-100 p-4 rounded-md">
-                  <h3 className="text-lg font-semibold mb-3">Extracted Text</h3>
-                  <pre className="whitespace-pre-wrap">
-                    {book.bookContent[0]?.chapterText || "No text available"}
-                  </pre>
-                </div>
+              {/* Extracted Text on the Right */}
+              <div className="flex-1 w-full">
+                <h2 className="text-xl font-medium mb-2">Extracted Text</h2>
+                <textarea
+                  value={
+                    book.bookContent[0]?.chapterText || "No text available"
+                  }
+                  readOnly
+                  rows="20"
+                  cols="50"
+                  placeholder="Extracted text will appear here..."
+                  className="border border-gray-300 p-2 rounded-md w-full"
+                />
               </div>
             </div>
 
@@ -269,7 +288,10 @@ export default function BookView() {
               <div className="space-y-4">
                 {reviews.length > 0 ? (
                   reviews.map((review) => (
-                    <div key={review._id} className="p-4 bg-gray-100 rounded-lg">
+                    <div
+                      key={review._id}
+                      className="p-4 bg-gray-100 rounded-lg"
+                    >
                       <p className="font-semibold">{review.review}</p>
                       <p className="text-sm text-gray-600">
                         Reviewed by {review.userRef.username}
@@ -313,7 +335,6 @@ export default function BookView() {
             </div>
           </div>
         </div>
-
       )}
     </main>
   );

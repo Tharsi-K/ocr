@@ -58,6 +58,11 @@ export default function Header() {
               About
             </li>
           </Link>
+          {(currentUser?.role === 'Admin' || currentUser?.role === 'User') && (
+            <Link to="/add-book">
+              <li className="text-slate-700 hover:underline">Add Book</li>
+            </Link>
+          )}
           {/* Show Admin Page if user is an Admin */}
           {currentUser?.role === 'Admin' && (
             <Link to="/admin">

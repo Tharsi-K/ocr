@@ -6,7 +6,7 @@ export default function Search() {
   const navigate = useNavigate();
   const [sidebardata, setSidebardata] = useState({
     searchTerm: "",
-    type: "all",
+    region: "all",
     sort: "created_at",
     order: "desc",
   });
@@ -18,19 +18,19 @@ export default function Search() {
   useEffect(() => {
     const urlParams = new URLSearchParams(location.search);
     const searchTermFromUrl = urlParams.get("searchTerm");
-    const typeFromUrl = urlParams.get("type");
+    const regionFromUrl = urlParams.get("region");
     const sortFromUrl = urlParams.get("sort");
     const orderFromUrl = urlParams.get("order");
 
     if (
       searchTermFromUrl ||
-      typeFromUrl ||
+      regionFromUrl ||
       sortFromUrl ||
       orderFromUrl
     ) {
       setSidebardata({
         searchTerm: searchTermFromUrl || "",
-        type: typeFromUrl || "all",
+        region: regionFromUrl || "all",
         sort: sortFromUrl || "created_at",
         order: orderFromUrl || "desc",
       });
@@ -61,7 +61,7 @@ export default function Search() {
       e.target.id === "Eastern" ||
       e.target.id === "Upcountry"
     ) {
-      setSidebardata({ ...sidebardata, type: e.target.id });
+      setSidebardata({ ...sidebardata, region: e.target.id });
     }
 
     if (e.target.id === "searchTerm") {
@@ -81,7 +81,7 @@ export default function Search() {
     e.preventDefault();
     const urlParams = new URLSearchParams();
     urlParams.set("searchTerm", sidebardata.searchTerm);
-    urlParams.set("type", sidebardata.type);
+    urlParams.set("region", sidebardata.region);
     urlParams.set("sort", sidebardata.sort);
     urlParams.set("order", sidebardata.order);
     const searchQuery = urlParams.toString();
@@ -119,14 +119,14 @@ export default function Search() {
             />
           </div>
           <div className="flex gap-2 flex-wrap items-center">
-            <label className="font-semibold">Type:</label>
+            <label className="font-semibold">Region:</label>
             <div className="flex gap-2">
               <input
                 type="checkbox"
                 id="all"
                 className="w-5"
                 onChange={handleChange}
-                checked={sidebardata.type === "all"}
+                checked={sidebardata.region === "all"}
               />
               <span>All</span>
             </div>
@@ -136,7 +136,7 @@ export default function Search() {
                 id="Jaffna"
                 className="w-5"
                 onChange={handleChange}
-                checked={sidebardata.type === "Jaffna"}
+                checked={sidebardata.region === "Jaffna"}
               />
               <span>Jaffna</span>
             </div>
@@ -146,7 +146,7 @@ export default function Search() {
                 id="Eastern"
                 className="w-5"
                 onChange={handleChange}
-                checked={sidebardata.type === "Eastern"}
+                checked={sidebardata.region === "Eastern"}
               />
               <span>Eastern</span>
             </div>
@@ -156,7 +156,7 @@ export default function Search() {
                 id="Upcountry"
                 className="w-5"
                 onChange={handleChange}
-                checked={sidebardata.type === "Upcountry"}
+                checked={sidebardata.region === "Upcountry"}
               />
               <span>Upcountry</span>
             </div>

@@ -17,7 +17,7 @@ const bookSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
-    type: {
+    region: {
       type: [String],
       enum: [
         "Jaffna",
@@ -31,6 +31,10 @@ const bookSchema = new mongoose.Schema(
     imageUrls: {
       type: Array,
       required: true,
+    },
+    pdfUrl: {
+      type: String,
+      required: false,
     },
     userRef: {
       // Person created the book
@@ -71,7 +75,6 @@ const bookSchema = new mongoose.Schema(
     },
     year: {
       type: Number,
-      required: true,
     },
     textStyle: {
       type: String,
@@ -83,39 +86,30 @@ const bookSchema = new mongoose.Schema(
     },
     publisher: {
       type: String,
-      required: true,
     },
     copyright: {
       type: String,
-      required: true,
     },
     internetReference: {
       type: String,
-      required: true,
     },
     release: {
       type: String,
-      required: true,
     },
     sourceHolder: {
       type: String,
-      required: true,
     },
     address: {
       type: String,
-      required: true,
     },
     collector: {
       type: String,
-      required: true,
     },
     date: { // Changed 'Date' to lowercase
       type: String,
-      required: true,
     },
-    KeyWords: {
+    keyWords: {
       type: String,
-      required: true,
     },
     reviewCount: { type: Number, default: 0 },
     approvalStatus: {
