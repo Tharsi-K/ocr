@@ -318,5 +318,3 @@ export default function BookView() {
     </main>
   );
 }
-
-
