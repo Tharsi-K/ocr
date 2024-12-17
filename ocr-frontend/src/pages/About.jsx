@@ -1,51 +1,79 @@
 import React from 'react';
 import '@fontsource/noto-sans-tamil'; // Defaults to weight 400
 
-
 export default function About() {
   return (
     <div style={{ padding: '20px', fontFamily: 'Arial, sans-serif', lineHeight: '1.6' }}>
       <br />
-      <h1 style={{ color: '#06b6d4', fontFamily: 'Tiro Tamil', fontSize: '20px' }}>எங்களை பற்றி</h1>
-      <p style={{ fontFamily: 'Noto Sans Tamil', fontSize: '16px', padding: '5px 20px 5px 25px' }}>
-        எங்களின் தமிழ் OCR முறைமைக்கு வரவேற்கிறோம்! எங்கள் தளம், தமிழ் எழுத்துகளை உள்ளடக்கிய படங்களை 
-        திருத்தக்கூடிய மற்றும் தேடக்கூடிய டிஜிட்டல் உரை வடிவமாக மாற்றுவதற்காக வடிவமைக்கப்பட்டது. ஸ்கேன் செய்யப்பட்ட 
-        ஆவணங்கள், கை எழுத்து குறிப்புகள், அச்சிடப்பட்ட புத்தகங்கள் போன்றவற்றை இந்த தளத்தை பயன்படுத்தி எளிதில் மாற்றக்கூடிய வடிவத்தில் பெற முடியும்.
-        பயனர்கள் புத்தகங்களை பதிவேற்றுவதற்கும், அவற்றை மதிப்பீடு செய்வதற்கும், பின்னர் மதிப்பீட்டிற்குப் 
-        பிறகு புத்தகங்கள் அனைவருக்கும் கிடைக்கும்படி காட்டுவதற்கும் இந்த முறைமை உதவுகிறது.
+      <h1 style={{ color: '#06b6d4', fontSize: '20px' }}>About Us</h1>
+      <p style={{ fontSize: '16px', padding: '5px 20px 5px 25px' }}>
+        Welcome to our Tamil OCR system! Our platform is designed to convert images, pdf containing Tamil text 
+        into editable and searchable digital text. Whether it’s scanned documents, handwritten notes, or 
+        printed books, you can easily transform them into a digital format using this platform.
+        Users can upload books, evaluate them, and make them accessible to everyone after review.
       </p>
 
       <br />
-      <h2 style={{ color: '#1e40af', fontFamily: 'Tiro Tamil', fontSize: '20px'  }}>எங்கள் நோக்கம்</h2>
-      <p style={{ fontFamily: 'Noto Sans Tamil', fontSize: '16px', padding: '5px 20px 5px 25px' }}>
-        பாரம்பரிய தமிழ் உள்ளடக்கங்களை டிஜிட்டல் வடிவத்திற்கு எளிதாக மாற்றி, தமிழ் இலக்கியத்தின் செறிவை 
-        பாதுகாத்து, அதை தற்போதைய பயன்பாடுகளுக்கு மிகவும் அணுகக்கூடியதாக மாற்றுவதன் மூலம் அனைத்து படைப்புகளையும் அனைவருக்கும் எளிதாக அணுகக்கூடியதாக மாற்றுவதே எங்கள் நோக்கம்..மேலும் பழைய புத்தகங்களை பாதுகாத்து அடுத்த தலைமுறைக்கு அதை சேர்க்க வேண்டும்.
+      <h2 style={{ color: '#1e40af', fontSize: '20px' }}>Our Mission</h2>
+      <p style={{ fontSize: '16px', padding: '5px 20px 5px 25px' }}>
+        Our mission is to make traditional Tamil content easily accessible in a digital format, 
+        preserving the richness of Tamil literature for the future. We aim to safeguard old books and 
+        pass them on to the next generation.
       </p>
 
       <br />
-      <h2 style={{ color: '#1e40af', fontFamily: 'Tiro Tamil', fontSize: '20px'  }}>சிறப்பம்சங்கள்</h2>
-      <ul style={{ fontFamily: 'Noto Sans Tamil', fontSize: '16px', padding: '5px 20px 5px 25px' }}>
-        <li>அச்சிடப்பட்ட மற்றும் கை எழுத்து, தமிழ் எழுத்துக்களின் துல்லியமான உரை முறைமை மாற்றம்.</li>
-        <li>PNG, JPEG, TIFF போன்ற பல பட வடிவங்களுக்கான ஆதரவு.</li>
-        <li>பயனர்கள் புத்தகங்களை பதிவேற்றுவதற்கான வசதி.</li>
-        <li>பதிவேற்றப்பட்ட புத்தகங்கள் இருமடங்கான மதிப்பீட்டிற்குப் பிறகு அனைவருக்கும் கிடைக்கக் காட்டப்படும்.</li>
-        <li>புத்தக மதிப்பீட்டின் பின்னர் டிஜிட்டல் முறையில் புத்தகங்களை படிக்க முடியும்.</li>
+      <h2 style={{ color: '#1e40af', fontSize: '20px' }}>Features</h2>
+      <ul style={{ fontSize: '16px', padding: '5px 20px 5px 25px' }}>
+        <li>Accurate text conversion for printed and handwritten Tamil text.</li>
+        <li>Support for multiple image formats, including PNG, JPEG, and TIFF.</li>
+        <li>Book upload functionality for users.</li>
+        <li>Reviewed books become accessible to everyone.</li>
+        <li>Read books digitally after successful review.</li>
       </ul>
 
       <br />
-      <h2 style={{ color: '#1e40af', fontFamily: 'Tiro Tamil', fontSize: '20px'  }}>ஏன் எங்களை தேர்வு செய்ய வேண்டும்?</h2>
-      <p style={{ fontFamily: 'Noto Sans Tamil', fontSize: '16px', padding: '5px 20px 5px 25px' }}>
-        தமிழ் மொழியின் முக்கியத்துவத்தை நாங்கள் அறிகிறோம். எங்கள் OCR முறைமை,  தமிழ் மொழி மற்றும் அதன் இலக்கியத்தை பாதுகாக்கும் ஒரு தளம் மட்டுமல்ல, 
-        அதை டிஜிட்டல் உலகிற்கு கொண்டு செல்வதற்கான ஒரு வாய்ப்பாகவும் விளங்குகிறது. ஆராய்ச்சியாளர்கள், ஆசிரியர்கள் அல்லது ஆவணங்களை 
-        டிஜிட்டல் செய்ய விரும்பும் யாராக இருந்தாலும், எங்கள் முறைமை உங்களுக்கு உதவ தயாராக உள்ளது. 
+      <h2 style={{ color: '#1e40af', fontSize: '20px' }}>Why Choose Us?</h2>
+      <p style={{ fontSize: '16px', padding: '5px 20px 5px 25px' }}>
+        We understand the importance of the Tamil language. Our OCR platform not only helps preserve 
+        Tamil language and literature but also provides a gateway to the digital world. Whether you are 
+        a researcher, teacher, or someone looking to digitize your documents, our platform is here to help you.
       </p>
-      
-      <p style={{ marginTop: '20px', fontFamily: 'Latha, Arial, sans-serif', padding: '2px 20px 1px 15px' }}>
-        <strong>எங்கள் தமிழ் OCR முறையை தேர்வு செய்ததற்கு நன்றி!</strong> உங்களிடம் கேள்விகள் அல்லது கருத்துகள் 
-        இருந்தால், எங்களை தொடர்பு கொள்ளுங்கள். மொழியியல் பாரம்பரியத்தை பாதுகாத்து, டிஜிட்டல் எதிர்காலத்தை 
-        ஏற்றுக்கொள்ள எங்களுடன்  ஒன்றாக இணைந்திருங்கள். உங்கள் கருத்துகளை எங்களுடன் பகிர்ந்துகொள்ளவும், தமிழ் மொழியின் செறிவை 
-        பாதுகாக்க இந்த பயணத்தில் எங்களுடன் இணைந்திருங்கள்.
+
+      <br />
+      <h2 style={{ color: '#06b6d4', fontSize: '20px' }}>Getting Started</h2>
+      <p style={{ fontSize: '16px', padding: '5px 20px 5px 25px' }}>
+        To access all features:
+        <ul>
+          <li><strong>Sign In</strong> if you already have an account.</li>
+          <li><strong>Sign Up</strong> if you are new to the platform.</li>
+          <li>Or, continue quickly with <strong>Google Authentication</strong>.</li>
+        </ul>
+      </p>
+
+      <br />
+      <h2 style={{ color: '#1e40af', fontSize: '20px' }}>User Account Features</h2>
+      <ul style={{ fontSize: '16px', padding: '5px 20px 5px 25px' }}>
+        <li>Update your <strong>Email</strong>, <strong>Username</strong>, and <strong>Password</strong> from your profile.</li>
+        <li>Delete your account anytime if needed.</li>
+        <li>Add and view books that you have uploaded.</li>
+      </ul>
+
+      <br />
+      <h2 style={{ color: '#1e40af', fontSize: '20px' }}>Admin Panel</h2>
+      <p style={{ fontSize: '16px', padding: '5px 20px 5px 25px' }}>
+        The <strong>Admin Panel</strong> is accessible only to administrators. Admins can:
+        <ul>
+          <li>View the dashboard.</li>
+          <li>Manage all uploaded books.</li>
+          <li>Manage user accounts.</li>
+        </ul>
+      </p>
+
+      <p style={{ marginTop: '20px', padding: '5px 20px 5px 25px' }}>
+        <strong>Thank you for choosing our Tamil OCR system!</strong> If you have any questions or suggestions, 
+        feel free to contact us. Join us in preserving linguistic heritage while embracing a digital future.
       </p>
     </div>
   );
 }
+
