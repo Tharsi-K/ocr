@@ -81,9 +81,17 @@ export const getAllBooks = async (req, res, next) => {
       region = { $in: ["Jaffna", "Eastern", "Upcountry"] }; // Default to all regions if none specified
     }
 
+    const approvalStatus = req.query.approvalStatus;
+    let statusFilter = {}; // Default: No filter applied
+
+    if (approvalStatus) {
+      const statuses = approvalStatus.split(",");
+      statusFilter = { approvalStatus: { $in: statuses } };
+    }
     const books = await Book.find({
       name: { $regex: searchTerm, $options: "i" },
       region, // Add region filter
+      ...statusFilter, // Include approvalStatus dynamically
     })
       .sort({
         [sort]: order,

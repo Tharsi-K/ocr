@@ -245,7 +245,7 @@ export default function BookView() {
                     <span className="font-semibold text-black">
                       திறவுச்சொற்கள் :{" "}
                     </span>
-                    {book.KeyWords}
+                    {book.keyWords}
                   </p>
                 </div>
               </div>

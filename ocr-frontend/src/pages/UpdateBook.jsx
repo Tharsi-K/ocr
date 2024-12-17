@@ -575,9 +575,9 @@ export default function UpdateBook() {
             type="text"
             placeholder="திறவுச்சொற்கள்"
             className="border p-2 rounded-lg"
-            id="KeyWords"
+            id="keyWords"
             onChange={handleChange}
-            value={formData.KeyWords}
+            value={formData.keyWords}
           />
         </div>
 
