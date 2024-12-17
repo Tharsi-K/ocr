@@ -1,14 +1,17 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useSelector } from "react-redux";
 import BookItem from "../components/BookItem";
 
 export default function Search() {
   const navigate = useNavigate();
+  const { currentUser } = useSelector((state) => state.user);
   const [sidebardata, setSidebardata] = useState({
     searchTerm: "",
     region: "all",
     sort: "created_at",
     order: "desc",
+    approvalStatus: "Approved", // Default filter to 'Approved'
   });
 
   const [loading, setLoading] = useState(false);
@@ -21,18 +24,21 @@ export default function Search() {
     const regionFromUrl = urlParams.get("region");
     const sortFromUrl = urlParams.get("sort");
     const orderFromUrl = urlParams.get("order");
+    const approvalStatusFromUrl = urlParams.get("approvalStatus");
 
     if (
       searchTermFromUrl ||
       regionFromUrl ||
       sortFromUrl ||
-      orderFromUrl
+      orderFromUrl ||
+      approvalStatusFromUrl
     ) {
       setSidebardata({
         searchTerm: searchTermFromUrl || "",
         region: regionFromUrl || "all",
         sort: sortFromUrl || "created_at",
         order: orderFromUrl || "desc",
+        approvalStatus: approvalStatusFromUrl || "Approved",
       });
     }
 
@@ -70,10 +76,12 @@ export default function Search() {
 
     if (e.target.id === "sort_order") {
       const sort = e.target.value.split("_")[0] || "created_at";
-
       const order = e.target.value.split("_")[1] || "desc";
-
       setSidebardata({ ...sidebardata, sort, order });
+    }
+
+    if (e.target.id === "approvalStatus") {
+      setSidebardata({ ...sidebardata, approvalStatus: e.target.value });
     }
   };
 
@@ -84,6 +92,7 @@ export default function Search() {
     urlParams.set("region", sidebardata.region);
     urlParams.set("sort", sidebardata.sort);
     urlParams.set("order", sidebardata.order);
+    urlParams.set("approvalStatus", sidebardata.approvalStatus);
     const searchQuery = urlParams.toString();
     navigate(`/search?${searchQuery}`);
   };
@@ -101,9 +110,10 @@ export default function Search() {
     }
     setBooks([...books, ...data]);
   };
+
   return (
     <div className="flex flex-col md:flex-row">
-      <div className="p-7  border-b-2 md:border-r-2 md:min-h-screen">
+      <div className="p-7 border-b-2 md:border-r-2 md:min-h-screen">
         <form onSubmit={handleSubmit} className="flex flex-col gap-8">
           <div className="flex items-center gap-2">
             <label className="whitespace-nowrap font-semibold">
@@ -118,6 +128,7 @@ export default function Search() {
               onChange={handleChange}
             />
           </div>
+
           <div className="flex gap-2 flex-wrap items-center">
             <label className="font-semibold">Region:</label>
             <div className="flex gap-2">
@@ -161,6 +172,7 @@ export default function Search() {
               <span>Upcountry</span>
             </div>
           </div>
+
           <div className="flex items-center gap-2">
             <label className="font-semibold">Sort:</label>
             <select
@@ -173,11 +185,30 @@ export default function Search() {
               <option value="createdAt_asc">Oldest</option>
             </select>
           </div>
+
+          {/* Conditionally show the Approval Status filter for signed-in users */}
+          {currentUser && (
+            <div className="flex items-center gap-2">
+              <label className="font-semibold">Approval Status:</label>
+              <select
+                onChange={handleChange}
+                value={sidebardata.approvalStatus}
+                id="approvalStatus"
+                className="border rounded-lg p-3"
+              >
+                <option value="Approved">Approved</option>
+                <option value="Pending">Pending</option>
+                <option value="Under Review">Under Review</option>
+              </select>
+            </div>
+          )}
+
           <button className="bg-slate-700 text-white p-3 rounded-lg uppercase hover:opacity-95">
             Search
           </button>
         </form>
       </div>
+
       <div className="flex-1">
         <h1 className="text-3xl font-semibold border-b p-3 text-slate-700 mt-5">
           Book results:
@@ -194,9 +225,7 @@ export default function Search() {
 
           {!loading &&
             books &&
-            books.map((book) => (
-              <BookItem key={book._id} book={book} />
-            ))}
+            books.map((book) => <BookItem key={book._id} book={book} />)}
 
           {showMore && (
             <button

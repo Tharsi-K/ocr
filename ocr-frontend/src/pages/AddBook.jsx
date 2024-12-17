@@ -47,7 +47,6 @@ export default function AddBook() {
     media: "", // Added media state
   });
 
-  console.log(formData);
   const [text, setText] = useState(""); // State for extracted text
   const [imageUploadError, setImageUploadError] = useState(false);
   const [pdfUploadError, setPdfUploadError] = useState(false);
