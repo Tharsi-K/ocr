@@ -124,9 +124,7 @@ export default function About() {
           <div className="grid grid-cols-1 gap-8 md:grid-cols-3">
             {features.map((feature, index) => (
               <div key={index} className="bg-white p-6 rounded-lg shadow-md">
-                <div className="p-2 bg-indigo-50 rounded-full w-12 h-12 flex items-center justify-center mb-4">
-                  {feature.icon}
-                </div>
+                
                 <h3 className="text-xl font-semibold mb-2">{feature.title}</h3>
                 <p className="text-gray-600">{feature.description}</p>
               </div>
@@ -148,7 +146,7 @@ export default function About() {
             them if needed. Once a book is added, it goes through a two-stage
             review process, where it is checked for accuracy and quality by
             reviewers. After being reviewed twice, the book requires approval
-            from the *Admin* before it is made public. This ensures that all
+            from the Admin before it is made public. This ensures that all
             content is thoroughly verified for accuracy before being shared with
             the public.
           </p>
