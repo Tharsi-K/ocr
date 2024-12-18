@@ -64,8 +64,11 @@ export default function Search() {
     if (
       e.target.id === "all" ||
       e.target.id === "Jaffna" ||
-      e.target.id === "Eastern" ||
-      e.target.id === "Upcountry"
+      e.target.id === "Batticaloa" ||
+      e.target.id === "Upcountry" ||
+      e.target.id === "Vanni" ||
+      e.target.id === "Muslim Tamil" ||
+      e.target.id === "Other"
     ) {
       setSidebardata({ ...sidebardata, region: e.target.id });
     }
@@ -131,45 +134,82 @@ export default function Search() {
 
           <div className="flex gap-2 flex-wrap items-center">
             <label className="font-semibold">Region:</label>
-            <div className="flex gap-2">
-              <input
-                type="checkbox"
-                id="all"
-                className="w-5"
-                onChange={handleChange}
-                checked={sidebardata.region === "all"}
-              />
-              <span>All</span>
-            </div>
-            <div className="flex gap-2">
-              <input
-                type="checkbox"
-                id="Jaffna"
-                className="w-5"
-                onChange={handleChange}
-                checked={sidebardata.region === "Jaffna"}
-              />
-              <span>Jaffna</span>
-            </div>
-            <div className="flex gap-2">
-              <input
-                type="checkbox"
-                id="Eastern"
-                className="w-5"
-                onChange={handleChange}
-                checked={sidebardata.region === "Eastern"}
-              />
-              <span>Eastern</span>
-            </div>
-            <div className="flex gap-2">
-              <input
-                type="checkbox"
-                id="Upcountry"
-                className="w-5"
-                onChange={handleChange}
-                checked={sidebardata.region === "Upcountry"}
-              />
-              <span>Upcountry</span>
+            <div className="grid grid-cols-3 gap-x-2 gap-y-1">
+              {/* Row 1 */}
+              <div className="flex items-center space-x-1">
+                <input
+                  type="checkbox"
+                  id="all"
+                  className="w-4 h-4"
+                  onChange={handleChange}
+                  checked={sidebardata.region === "all"}
+                />
+                <span className="text-sm">All</span>
+              </div>
+              <div className="flex items-center space-x-1">
+                <input
+                  type="checkbox"
+                  id="Jaffna"
+                  className="w-4 h-4"
+                  onChange={handleChange}
+                  checked={sidebardata.region === "Jaffna"}
+                />
+                <span className="text-sm">Jaffna</span>
+              </div>
+              <div className="flex items-center space-x-1">
+                <input
+                  type="checkbox"
+                  id="Batticaloa"
+                  className="w-4 h-4"
+                  onChange={handleChange}
+                  checked={sidebardata.region === "Batticaloa"}
+                />
+                <span className="text-sm">Batticaloa</span>
+              </div>
+
+              {/* Row 2 */}
+              <div className="flex items-center space-x-1">
+                <input
+                  type="checkbox"
+                  id="Upcountry"
+                  className="w-4 h-4"
+                  onChange={handleChange}
+                  checked={sidebardata.region === "Upcountry"}
+                />
+                <span className="text-sm">Upcountry</span>
+              </div>
+              <div className="flex items-center space-x-1">
+                <input
+                  type="checkbox"
+                  id="Vanni"
+                  className="w-4 h-4"
+                  onChange={handleChange}
+                  checked={sidebardata.region === "Vanni"}
+                />
+                <span className="text-sm">Vanni</span>
+              </div>
+              <div className="flex items-center space-x-1">
+                <input
+                  type="checkbox"
+                  id="Muslim Tamil"
+                  className="w-4 h-4"
+                  onChange={handleChange}
+                  checked={sidebardata.region === "Muslim Tamil"}
+                />
+                <span className="text-sm">Muslim Tamil</span>
+              </div>
+
+              {/* Row 3 */}
+              <div className="flex items-center space-x-1">
+                <input
+                  type="checkbox"
+                  id="Other"
+                  className="w-4 h-4"
+                  onChange={handleChange}
+                  checked={sidebardata.region === "Other"}
+                />
+                <span className="text-sm">Other</span>
+              </div>
             </div>
           </div>
 

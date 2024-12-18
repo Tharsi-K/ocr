@@ -78,7 +78,7 @@ export const getAllBooks = async (req, res, next) => {
     // Handle filtering by book region (Jaffna, Eastern, Upcountry)
     let region = req.query.region;
     if (region === undefined || region === "all") {
-      region = { $in: ["Jaffna", "Eastern", "Upcountry"] }; // Default to all regions if none specified
+      region = { $in: ["Jaffna", "Batticaloa", "Upcountry", "Vanni", "Muslim Tamil", "Other"] }; // Default to all regions if none specified
     }
 
     const approvalStatus = req.query.approvalStatus;
