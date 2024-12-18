@@ -6,6 +6,7 @@ import authRouter from './routes/auth.route.js';
 import bookRouter from './routes/book.route.js';
 import ReviewRouter from "./routes/review.route.js";
 import cookieParser from "cookie-parser";
+import path from 'path';
 dotenv.config();
 
 mongoose
@@ -17,6 +18,7 @@ mongoose
     console.log(err);
   });
 
+  const __dirname = path.resolve();
 
 const app = express();
 app.use(express.json());
@@ -31,6 +33,12 @@ app.use("/api/user", userRouter);
 app.use("/api/auth", authRouter);
 app.use("/api/book", bookRouter);
 app.use("/api/review", ReviewRouter);
+
+app.use(express.static(path.join(__dirname, "/ocr-frontend/dist")));
+
+app.get("*", (req, res) => {
+  res.sendFile(path.join(__dirname, "ocr-frontend", "dist", "index.html"));
+});
 
 app.use((err, req, res, next) => {
   const statusCode = err.statusCode || 500;
