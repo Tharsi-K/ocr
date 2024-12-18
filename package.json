@@ -6,8 +6,7 @@
   "type": "module",
   "scripts": {
     "dev": "nodemon ocr-backend/index.js",
-    "start": "node ocr-backend/index.js",
-    "build": "npm install && npm install --prefix ocr-frontend && npm run build --prefix ocr-frontend"
+    "start": "node ocr-backend/index.js"
   },
   "keywords": [],
   "author": "",
